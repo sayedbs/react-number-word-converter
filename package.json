@@ -15,7 +15,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "demo": "cd demo && npm start",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npx tsc"
   },
   "keywords": [
     "react",
@@ -66,5 +66,8 @@
   "bugs": {
     "url": "https://github.com/Sayed021/react-bangla-number-converter/issues"
   },
-  "homepage": "https://github.com/Sayed021/react-bangla-number-converter#readme"
+  "homepage": "https://github.com/Sayed021/react-bangla-number-converter#readme",
+  "dependencies": {
+    "react-bangla-number-converter": "^1.0.0"
+  }
 }
