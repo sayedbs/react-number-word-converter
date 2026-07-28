@@ -5,7 +5,7 @@ import {
   useBanglaNumberConverter,
   numberToBanglaWords,
   ConverterOptions 
-} from '../src';
+} from 'react-number-word-converter';
 
 const App: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('12345');
@@ -33,7 +33,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <header className="header">
-        <h1>🔢 React Bangla Number Converter</h1>
+        <h1>🔢 React Number Word Converter</h1>
         <p>
           A powerful React plugin that converts numeric values into Bangla (Bengali) words. 
           Perfect for financial applications, educational tools, and Bengali language interfaces.
@@ -226,7 +226,7 @@ const App: React.FC = () => {
           <h2>💻 Usage Examples</h2>
           <div style={{ backgroundColor: '#f7fafc', padding: '20px', borderRadius: '8px', fontFamily: 'monospace' }}>
             <h3>Basic Usage:</h3>
-            <pre>{`import { BanglaNumberConverter } from 'react-bangla-number-converter';
+            <pre>{`import { BanglaNumberConverter } from 'react-number-word-converter';
 
 <BanglaNumberConverter value={12345} />
 // Output: বারো হাজার তিন শত পঁয়তাল্লিশ`}</pre>
@@ -242,13 +242,13 @@ const App: React.FC = () => {
 // Output: বারো-হাজার-তিন-শত-পঁয়তাল্লিশ`}</pre>
 
             <h3>Using the Hook:</h3>
-            <pre>{`import { useBanglaNumberConverter } from 'react-bangla-number-converter';
+            <pre>{`import { useBanglaNumberConverter } from 'react-number-word-converter';
 
 const { banglaText, convert } = useBanglaNumberConverter(12345);
 // banglaText: "বারো হাজার তিন শত পঁয়তাল্লিশ"`}</pre>
 
             <h3>Direct Function Call:</h3>
-            <pre>{`import { numberToBanglaWords } from 'react-bangla-number-converter';
+            <pre>{`import { numberToBanglaWords } from 'react-number-word-converter';
 
 const result = numberToBanglaWords(12345);
 // result: "বারো হাজার তিন শত পঁয়তাল্লিশ"`}</pre>

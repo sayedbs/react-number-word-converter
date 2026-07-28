@@ -1,6 +1,6 @@
 
 #🧩 Project Name
-**React Bangla Number Converter**
+**React Number Word Converter**
 
 A React utility plugin that converts numeric values into Bangla (Bengali) words, e.g.:
 
@@ -105,7 +105,7 @@ react-bangla-number/
 ---
 
 ## 🧩 End of File
-> This markdown defines the AI agent’s development scope and behavioral rules for the **React Bangla Number Converter** project.
+> This markdown defines the AI agent’s development scope and behavioral rules for the **React Number Word Converter** project.
 > Any new command or request will follow these principles automatically.
 
 

@@ -16,6 +16,7 @@ const baseConfig = {
     resolve({
       browser: true,
       preferBuiltins: false,
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
     }),
     commonjs(),
     babel({
@@ -38,7 +39,7 @@ export default [
     output: {
       file: packageJson.main,
       format: 'umd',
-      name: 'ReactBanglaNumberConverter',
+      name: 'ReactNumberWordConverter',
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',
@@ -68,7 +69,7 @@ export default [
     output: {
       file: 'dist/index.min.js',
       format: 'umd',
-      name: 'ReactBanglaNumberConverter',
+      name: 'ReactNumberWordConverter',
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',

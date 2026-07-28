@@ -1,8 +1,8 @@
-# 🔢 React Bangla Number Converter
+# 🔢 React Number Word Converter
 
-[![npm version](https://badge.fury.io/js/react-bangla-number-converter.svg)](https://badge.fury.io/js/react-bangla-number-converter)
-[![Build Status](https://travis-ci.com/Sayed021/react-bangla-number-converter.svg?branch=main)](https://travis-ci.com/Sayed021/react-bangla-number-converter)
-[![Coverage Status](https://coveralls.io/repos/github/Sayed021/react-bangla-number-converter/badge.svg?branch=main)](https://coveralls.io/github/Sayed021/react-bangla-number-converter?branch=main)
+[![npm version](https://badge.fury.io/js/react-number-word-converter.svg)](https://badge.fury.io/js/react-number-word-converter)
+[![Build Status](https://travis-ci.com/Sayed021/react-number-word-converter.svg?branch=main)](https://travis-ci.com/Sayed021/react-number-word-converter)
+[![Coverage Status](https://coveralls.io/repos/github/Sayed021/react-number-word-converter/badge.svg?branch=main)](https://coveralls.io/github/Sayed021/react-number-word-converter?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A powerful React utility plugin that converts numeric values into Bangla (Bengali) words. Perfect for financial applications, educational tools, and Bengali language interfaces.
@@ -21,15 +21,15 @@ A powerful React utility plugin that converts numeric values into Bangla (Bengal
 ## 📦 Installation
 
 ```bash
-npm install react-bangla-number-converter
+npm install react-number-word-converter
 ```
 
 ```bash
-yarn add react-bangla-number-converter
+yarn add react-number-word-converter
 ```
 
 ```bash
-pnpm add react-bangla-number-converter
+pnpm add react-number-word-converter
 ```
 
 ## 🚀 Quick Start
@@ -37,7 +37,7 @@ pnpm add react-bangla-number-converter
 ### Basic Usage
 
 ```tsx
-import { BanglaNumberConverter } from 'react-bangla-number-converter';
+import { BanglaNumberConverter } from 'react-number-word-converter';
 
 function App() {
   return (
@@ -52,7 +52,7 @@ function App() {
 ### Using the Hook
 
 ```tsx
-import { useBanglaNumberConverter } from 'react-bangla-number-converter';
+import { useBanglaNumberConverter } from 'react-number-word-converter';
 
 function MyComponent() {
   const { banglaText, convert } = useBanglaNumberConverter(12345);
@@ -70,7 +70,7 @@ function MyComponent() {
 ### Direct Function Call
 
 ```tsx
-import { numberToBanglaWords } from 'react-bangla-number-converter';
+import { numberToBanglaWords } from 'react-number-word-converter';
 
 const result = numberToBanglaWords(12345);
 console.log(result); // "বারো হাজার তিন শত পঁয়তাল্লিশ"
@@ -230,7 +230,7 @@ numberToBanglaWords('১২৩৪৫', { supportBanglaDigits: true });
 ### Financial Application
 
 ```tsx
-import { BanglaNumberConverter } from 'react-bangla-number-converter';
+import { BanglaNumberConverter } from 'react-number-word-converter';
 
 function InvoiceAmount({ amount }: { amount: number }) {
   return (
@@ -252,7 +252,7 @@ function InvoiceAmount({ amount }: { amount: number }) {
 ### Educational Tool
 
 ```tsx
-import { BanglaNumberInput } from 'react-bangla-number-converter';
+import { BanglaNumberInput } from 'react-number-word-converter';
 
 function NumberLearningApp() {
   return (
@@ -271,7 +271,7 @@ function NumberLearningApp() {
 ### Custom Styling
 
 ```tsx
-import { BanglaNumberConverter } from 'react-bangla-number-converter';
+import { BanglaNumberConverter } from 'react-number-word-converter';
 
 function StyledConverter({ value }: { value: number }) {
   return (
@@ -298,7 +298,7 @@ function StyledConverter({ value }: { value: number }) {
 
 ```tsx
 import { useState } from 'react';
-import { BanglaNumberInput } from 'react-bangla-number-converter';
+import { BanglaNumberInput } from 'react-number-word-converter';
 
 function PaymentForm() {
   const [amount, setAmount] = useState('');
@@ -335,7 +335,7 @@ function PaymentForm() {
 ### Multiple Language Support
 
 ```tsx
-import { BanglaNumberConverter } from 'react-bangla-number-converter';
+import { BanglaNumberConverter } from 'react-number-word-converter';
 
 function MultiLanguageInvoice({ amount, language }: { amount: number; language: string }) {
   return (
@@ -445,7 +445,7 @@ If you encounter any issues:
 
 1. Check the [documentation](#-api-reference)
 2. Look at the [examples](#-advanced-examples)
-3. Open an [issue](https://github.com/Sayed021/react-bangla-number-converter/issues)
+3. Open an [issue](https://github.com/Sayed021/react-number-word-converter/issues)
 4. Contact the maintainer
 
 ## 🤝 Contributing
@@ -462,7 +462,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ```bash
 # Clone the repository
-git clone https://github.com/Sayed021/react-bangla-number-converter.git
+git clone https://github.com/Sayed021/react-number-word-converter.git
 
 # Install dependencies
 npm install
@@ -496,7 +496,7 @@ If you have any questions or need help, please:
 
 1. Check the [documentation](#-api-reference)
 2. Look at the [examples](#-advanced-examples)
-3. Open an [issue](https://github.com/Sayed021/react-bangla-number-converter/issues)
+3. Open an [issue](https://github.com/Sayed021/react-number-word-converter/issues)
 4. Contact the maintainer
 
 ## 📈 Roadmap

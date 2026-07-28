@@ -1,5 +1,5 @@
 {
-  "name": "react-bangla-number-converter",
+  "name": "react-number-word-converter",
   "version": "1.0.0",
   "description": "A React utility plugin that converts numeric values into Bangla (Bengali) words",
   "main": "dist/index.js",
@@ -25,7 +25,8 @@
     "converter",
     "words",
     "i18n",
-    "internationalization"
+    "internationalization",
+    "number-to-words"
   ],
   "author": "Sayed021",
   "license": "MIT",
@@ -61,13 +62,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Sayed021/react-bangla-number-converter.git"
+    "url": "https://github.com/Sayed021/react-number-word-converter.git"
   },
   "bugs": {
-    "url": "https://github.com/Sayed021/react-bangla-number-converter/issues"
+    "url": "https://github.com/Sayed021/react-number-word-converter/issues"
   },
-  "homepage": "https://github.com/Sayed021/react-bangla-number-converter#readme",
-  "dependencies": {
-    "react-bangla-number-converter": "^1.0.0"
-  }
+  "homepage": "https://github.com/Sayed021/react-number-word-converter#readme"
 }

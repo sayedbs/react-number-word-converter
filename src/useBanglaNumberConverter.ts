@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { numberToBanglaWords } from './numberToBanglaWords';
 import { ConverterOptions, UseBanglaNumberConverterReturn } from './types';
 
+const DEFAULT_OPTIONS: ConverterOptions = {};
+
 /**
  * Custom hook for converting numbers to Bangla words
  * @param initialValue - Initial number to convert
@@ -10,7 +12,7 @@ import { ConverterOptions, UseBanglaNumberConverterReturn } from './types';
  */
 export const useBanglaNumberConverter = (
   initialValue: number | string = 0,
-  options: ConverterOptions = {}
+  options: ConverterOptions = DEFAULT_OPTIONS
 ): UseBanglaNumberConverterReturn => {
   const [banglaText, setBanglaText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
