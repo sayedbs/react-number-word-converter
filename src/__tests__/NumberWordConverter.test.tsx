@@ -101,6 +101,27 @@ describe('NumberWordConverter language selection', () => {
   });
 });
 
+describe('NumberWordConverter right-to-left languages', () => {
+  test('should mark Arabic output as rtl without any caller opt-in', () => {
+    render(<NumberWordConverter value={345} lang="ar" />);
+    const element = screen.getByText('ثلاثمائة وخمسة وأربعون');
+    expect(element).toHaveAttribute('lang', 'ar');
+    expect(element).toHaveAttribute('dir', 'rtl');
+  });
+
+  test('should keep ltr languages unmarked as rtl', () => {
+    render(<NumberWordConverter value={345} lang="en" />);
+    expect(screen.getByText('three hundred forty-five')).toHaveAttribute('dir', 'ltr');
+  });
+
+  test('should follow a region tag to the base language direction', () => {
+    render(<NumberWordConverter value={5} lang="ar-SA" />);
+    const element = screen.getByText('خمسة');
+    expect(element).toHaveAttribute('lang', 'ar');
+    expect(element).toHaveAttribute('dir', 'rtl');
+  });
+});
+
 describe('NumberWordInput', () => {
   test('should render input field', () => {
     render(<NumberWordInput />);
@@ -207,6 +228,29 @@ describe('NumberWordInput', () => {
     
     await waitFor(() => {
       expect(screen.getByText('এক শততেইশ')).toBeInTheDocument();
+    });
+  });
+
+  test('should mark the field and container rtl for Arabic', () => {
+    render(<NumberWordInput lang="ar" />);
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveAttribute('dir', 'rtl');
+    expect(input.closest('div')).toHaveAttribute('dir', 'rtl');
+  });
+
+  test('should leave the field ltr for left-to-right languages', () => {
+    render(<NumberWordInput lang="en" />);
+    expect(screen.getByRole('textbox')).toHaveAttribute('dir', 'ltr');
+  });
+
+  test('should convert Arabic input in real-time', async () => {
+    render(<NumberWordInput lang="ar" />);
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: '12345' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('اثنا عشر ألفًا وثلاثمائة وخمسة وأربعون')).toBeInTheDocument();
     });
   });
 });

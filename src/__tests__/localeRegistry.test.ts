@@ -57,10 +57,17 @@ describe('locale registry', () => {
   });
 
   describe('built-in locales', () => {
-    test('should register en and bn on import', () => {
-      expect(getRegisteredLocales()).toEqual(expect.arrayContaining(['en', 'bn']));
+    test('should register en, bn and ar on import', () => {
+      expect(getRegisteredLocales()).toEqual(expect.arrayContaining(['en', 'bn', 'ar']));
       expect(getLocale('en').name).toBe('English');
       expect(getLocale('bn').name).toBe('Bangla');
+      expect(getLocale('ar').name).toBe('Arabic');
+    });
+
+    test('should carry text direction so callers never configure rtl by hand', () => {
+      expect(getLocale('en').dir).toBe('ltr');
+      expect(getLocale('bn').dir).toBe('ltr');
+      expect(getLocale('ar').dir).toBe('rtl');
     });
 
     test('should default to en', () => {
@@ -143,6 +150,69 @@ describe('locale registry', () => {
     test('should still convert when the smallest scale is exactly 100', () => {
       registerLocale('edge', { ...testLocale, scales: [{ value: 100, name: 'cent' }] });
       expect(numberToWords(150, { locale: 'edge' })).toBe('un cent kvindek');
+    });
+
+    test('should reject a nameByCount range that runs backwards', () => {
+      const broken = {
+        ...testLocale,
+        scales: [
+          { value: 100, name: 'cent' },
+          { value: 1000, name: 'mil', nameByCount: [{ from: 10, to: 3, name: 'miloj' }] },
+        ],
+      };
+      expect(() => registerLocale('bad', broken)).toThrow('has from 10 above to 3');
+    });
+
+    test('should reject a nameByCount range with a fractional or zero bound', () => {
+      const fractional = {
+        ...testLocale,
+        scales: [
+          { value: 100, name: 'cent' },
+          { value: 1000, name: 'mil', nameByCount: [{ from: 1.5, to: 10, name: 'miloj' }] },
+        ],
+      };
+      expect(() => registerLocale('bad', fractional)).toThrow('whole counts starting at 1');
+    });
+
+    test('should reject a multi-character decimalMark', () => {
+      const broken = { ...testLocale, digits: null, decimalMark: '..' };
+      expect(() => registerLocale('bad', broken)).toThrow('decimalMark must be a single character');
+    });
+
+    test('should reject unitsBeforeTens without a tens table', () => {
+      const broken = { ...testLocale, tens: {}, unitsBeforeTens: true };
+      expect(() => registerLocale('bad', broken)).toThrow('no effect without a tens table');
+    });
+  });
+
+  describe('count-dependent scale names', () => {
+    test('should apply a range to a consumer-supplied locale', () => {
+      registerLocale('cnt', {
+        ...testLocale,
+        scales: [
+          { value: 100, name: 'cent' },
+          { value: 1000, name: 'mil', nameByCount: [{ from: 3, to: 10, name: 'miloj' }] },
+        ],
+      });
+
+      expect(numberToWords(2000, { locale: 'cnt' })).toBe('du mil');
+      expect(numberToWords(3000, { locale: 'cnt' })).toBe('tri miloj');
+      expect(numberToWords(11000, { locale: 'cnt' })).toBe('dek-un mil');
+    });
+
+    test('should match the range against the trailing part of a compound count', () => {
+      registerLocale('cnt', {
+        ...testLocale,
+        scales: [
+          { value: 100, name: 'cent' },
+          { value: 1000, name: 'mil', nameByCount: [{ from: 3, to: 10, name: 'miloj' }] },
+        ],
+      });
+
+      // 105 ends in 5, so it takes the same form as a bare count of 5, while
+      // a round 300 has no trailing part and keeps the default name.
+      expect(numberToWords(105000, { locale: 'cnt' })).toBe('un cent kvin miloj');
+      expect(numberToWords(300000, { locale: 'cnt' })).toBe('tri cent mil');
     });
   });
 

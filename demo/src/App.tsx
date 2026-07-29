@@ -12,7 +12,9 @@ import {
 const LANGUAGE_CHOICES = [
   { code: 'en', label: 'English (en)' },
   { code: 'bn', label: 'Bangla (bn)' },
+  { code: 'ar', label: 'Arabic (ar, renders right-to-left)' },
   { code: 'en-GB', label: 'British English (en-GB, falls back to en)' },
+  { code: 'ar-SA', label: 'Saudi Arabic (ar-SA, falls back to ar)' },
 ];
 
 const App: React.FC = () => {
@@ -88,7 +90,8 @@ const App: React.FC = () => {
               ))}
             </select>
             <small>
-              Requested "{lang}", resolved to "{resolvedLocale.code}" ({resolvedLocale.name}).
+              Requested "{lang}", resolved to "{resolvedLocale.code}" ({resolvedLocale.name}),
+              written {resolvedLocale.dir === 'rtl' ? 'right-to-left' : 'left-to-right'}.
               Registered: {registeredLocales.join(', ')}.
             </small>
           </div>
@@ -296,6 +299,10 @@ const App: React.FC = () => {
             <h3>Choosing a Language:</h3>
             <pre>{`<NumberWordConverter value={12345} lang="bn" />
 // Output: বারো হাজার তিন শত পঁয়তাল্লিশ
+
+<NumberWordConverter value={12345} lang="ar" />
+// Output: اثنا عشر ألفًا وثلاثمائة وخمسة وأربعون
+// Renders with dir="rtl" automatically, no extra props needed
 
 <NumberWordConverter value={12345} lang="en-GB" />
 // Region tags fall back to their base language, so this uses "en"`}</pre>

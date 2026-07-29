@@ -1,5 +1,5 @@
 import { ConverterOptions } from './types';
-import { LocaleDefinition } from './locales/schema';
+import { LocaleDefinition, resolveScaleName } from './locales/schema';
 import { getLocale, getRegisteredLocales } from './localeRegistry';
 
 // Registers the built-in en and bn locales as a side effect of importing
@@ -12,18 +12,23 @@ import './locales';
  */
 const escapeForCharClass = (value: string): string => value.replace(/[\\\]^-]/g, '\\$&');
 
-/** Rewrites a locale's native digits into ASCII digits. */
+/**
+ * Rewrites a locale's native digits into ASCII digits, and its native
+ * decimal mark into a "." so the result is parseable.
+ */
 const fromNativeDigits = (text: string, locale: LocaleDefinition): string => {
   if (!locale.digits) {
     return text;
   }
-  return text
+  const ascii = text
     .split('')
     .map((char) => {
       const index = locale.digits ? locale.digits.indexOf(char) : -1;
       return index === -1 ? char : String(index);
     })
     .join('');
+
+  return locale.decimalMark ? ascii.split(locale.decimalMark).join('.') : ascii;
 };
 
 /** Rewrites ASCII digits into a locale's native digits. */
@@ -42,7 +47,7 @@ const toNativeDigits = (text: string, locale: LocaleDefinition): string => {
  *
  * Locales with an exact entry win outright, which covers Bangla's 99
  * irregular words. Everything else is composed from a tens word and a ones
- * word, which covers English.
+ * word, which covers English, and Arabic once the two are swapped.
  */
 const convertBelowHundred = (num: number, locale: LocaleDefinition): string => {
   const exact = locale.numbers[String(num)];
@@ -66,7 +71,9 @@ const convertBelowHundred = (num: number, locale: LocaleDefinition): string => {
     throw new Error(`Locale "${locale.code}" has no word for ${onesDigit}`);
   }
 
-  return `${tensWord}${locale.tensJoiner}${onesWord}`;
+  return locale.unitsBeforeTens
+    ? `${onesWord}${locale.tensJoiner}${tensWord}`
+    : `${tensWord}${locale.tensJoiner}${onesWord}`;
 };
 
 /**
@@ -98,9 +105,18 @@ const convertInteger = (
   scalesDescending.forEach((scale) => {
     if (remainder >= scale.value) {
       const count = Math.floor(remainder / scale.value);
+
+      // A locale may name the whole group outright rather than compose it,
+      // which is how Arabic gets its fused hundreds ("ثلاثمائة", not
+      // "ثلاثة مائة") and its duals ("ألفان").
+      const exactGroup = locale.numbers[String(count * scale.value)];
+
       // The space between a count and its scale name is intentionally
       // literal; groupSeparator only joins whole groups.
-      groups.push(`${convertInteger(count, locale, groupSeparator)} ${scale.name}`);
+      groups.push(
+        exactGroup ??
+          `${convertInteger(count, locale, groupSeparator)} ${resolveScaleName(scale, count)}`
+      );
       remainder %= scale.value;
     }
   });
@@ -137,7 +153,7 @@ export const numberToWords = (num: number | string, options: ConverterOptions = 
     includeSpaces = true,
     supportNativeDigits = false,
     outputNativeDigits = false,
-    separator = ' ',
+    separator,
     locale: localeCode,
   } = options;
 
@@ -145,13 +161,20 @@ export const numberToWords = (num: number | string, options: ConverterOptions = 
   // message instead of being rewrapped as a conversion failure.
   const locale = getLocale(localeCode);
 
+  // Scale groups take the locale's joiner, since Arabic strings them together
+  // with "و". Decimal digits are always read out plainly, so they keep the
+  // plain space. An explicit separator overrides both.
+  const groupJoiner = includeSpaces ? separator ?? locale.groupSeparator ?? ' ' : '';
+  const digitJoiner = includeSpaces ? separator ?? ' ' : '';
+
   try {
     let inputNumber: number;
 
     if (typeof num === 'string') {
       if (supportNativeDigits && locale.digits) {
         const digitClass = locale.digits.map(escapeForCharClass).join('');
-        const nativePattern = new RegExp(`^[${digitClass}\\s.\\-]+$`);
+        const markClass = locale.decimalMark ? escapeForCharClass(locale.decimalMark) : '';
+        const nativePattern = new RegExp(`^[${digitClass}${markClass}\\s.\\-]+$`);
         if (!nativePattern.test(num)) {
           throw new Error('Invalid number input');
         }
@@ -199,14 +222,13 @@ export const numberToWords = (num: number | string, options: ConverterOptions = 
           }
           return word;
         })
-        .join(includeSpaces ? separator : '');
+        .join(digitJoiner);
 
       const result = `${integerWords} ${locale.decimal} ${decimalWords}`;
       return outputNativeDigits ? toNativeDigits(result, locale) : result;
     }
 
-    const groupSeparator = includeSpaces ? separator : '';
-    const result = convertInteger(Math.floor(inputNumber), locale, groupSeparator);
+    const result = convertInteger(Math.floor(inputNumber), locale, groupJoiner);
     return outputNativeDigits ? toNativeDigits(result, locale) : result;
   } catch (error) {
     throw new Error(`Conversion failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

@@ -10,22 +10,20 @@ A powerful React utility plugin that converts numeric values into number words, 
 ```tsx
 <NumberWordConverter value={12345} />            // twelve thousand three hundred forty-five
 <NumberWordConverter value={12345} lang="bn" />  // বারো হাজার তিন শত পঁয়তাল্লিশ
+<NumberWordConverter value={12345} lang="ar" />  // اثنا عشر ألفًا وثلاثمائة وخمسة وأربعون
 ```
-
-
 
 ## ✨ Features
 
-- 🌍 **Multi-language**: English and Bangla built in as JSON locale files, plus `registerLocale()` for your own
+- 🌍 **Multi-language**: English, Bangla and Arabic built in as JSON locale files, plus `registerLocale()` for your own
+- ↔️ **Automatic RTL**: Right-to-left languages render with `dir="rtl"` on their own, with no extra props or CSS
 - 🔢 **Two Numbering Systems**: Western short scale (thousand, million, billion) and the Indian system (hazar, lakh, crore)
-- 🏷️ **Locale Fallback**: Region tags resolve to their base language, so `en-GB` uses `en`
+- 🏷️ **Locale Fallback**: Region tags resolve to their base language, so `en-GB` uses `en` and `ar-SA` uses `ar`
 - ⚙️ **Highly Configurable**: Customizable spacing, separators, and per-language native digits
 - 🎯 **TypeScript Ready**: Full TypeScript support with comprehensive type definitions
-- 🧪 **Well Tested**: 100 tests covering both languages, the registry, components, and the hook
+- 🧪 **Well Tested**: 131 tests covering all three languages, the registry, components, and the hook
 - 📦 **Easy Integration**: Simple React components and hooks
 - 🎨 **Accessible**: Emits correct `lang` and `dir` attributes for the active language
-
-
 
 ## 📦 Installation
 
@@ -41,11 +39,7 @@ yarn add react-number-word-converter
 pnpm add react-number-word-converter
 ```
 
-
-
 ## 🚀 Quick Start
-
-
 
 ### Basic Usage
 
@@ -62,18 +56,15 @@ function App() {
 }
 ```
 
-
-
 ### Choosing a Language
 
 ```tsx
 <NumberWordConverter value={12345} />              {/* twelve thousand three hundred forty-five */}
 <NumberWordConverter value={12345} lang="en" />    {/* twelve thousand three hundred forty-five */}
 <NumberWordConverter value={12345} lang="bn" />    {/* বারো হাজার তিন শত পঁয়তাল্লিশ */}
+<NumberWordConverter value={12345} lang="ar" />    {/* اثنا عشر ألفًا وثلاثمائة وخمسة وأربعون */}
 <NumberWordConverter value={12345} lang="en-GB" /> {/* falls back to en */}
 ```
-
-
 
 ### Using the Hook
 
@@ -93,8 +84,6 @@ function MyComponent() {
 }
 ```
 
-
-
 ### Direct Function Call
 
 ```tsx
@@ -104,22 +93,38 @@ numberToWords(12345);                    // "twelve thousand three hundred forty
 numberToWords(12345, { locale: 'bn' });  // "বারো হাজার তিন শত পঁয়তাল্লিশ"
 ```
 
-
-
 ## 🌍 Languages
-
-
 
 ### Built-in languages
 
 
-| Code | Language          | Numbering system                                                   | Native digits |
-| ---- | ----------------- | ------------------------------------------------------------------ | ------------- |
-| `en` | English (default) | Western short scale: hundred, thousand, million, billion, trillion | none          |
-| `bn` | Bangla            | Indian: শত, হাজার, লাখ, কোটি                                       | ০-৯           |
+| Code | Language          | Direction | Numbering system                                                   | Native digits |
+| ---- | ----------------- | --------- | ------------------------------------------------------------------ | ------------- |
+| `en` | English (default) | ltr       | Western short scale: hundred, thousand, million, billion, trillion | none          |
+| `bn` | Bangla            | ltr       | Indian: শত, হাজার, লাখ, কোটি                                       | ০-৯           |
+| `ar` | Arabic            | **rtl**   | Western short scale: مائة, ألف, مليون, مليار, تريليون              | ٠-٩           |
 
 
+### Arabic and right-to-left rendering
 
+Arabic needs no configuration to display correctly. The locale carries its own direction, and the components emit it, so the browser handles the rest:
+
+```tsx
+<NumberWordConverter value={345} lang="ar" />
+// renders: <span lang="ar" dir="rtl">ثلاثمائة وخمسة وأربعون</span>
+```
+
+`NumberWordInput` does the same, marking both the field and its container `dir="rtl"` so the input right-aligns. Digits typed into it still read left to right under Unicode bidi, so entry behaves normally.
+
+Some Arabic output worth knowing about, since it does not follow the pattern of the other languages:
+
+- Units are read before tens: 21 is `واحد وعشرون`, literally "one and twenty"
+- Hundreds are single fused words rather than a count plus a scale: 300 is `ثلاثمائة`, not `ثلاثة مائة`
+- Groups are strung together with `و`: 1234 is `ألف ومائتان وأربعة وثلاثون`
+- The scale word inflects for the number in front of it, so 3,000 is `ثلاثة آلاف`, 11,000 is `أحد عشر ألفًا`, and 100,000 is `مائة ألف`
+- Arabic-Indic digits `٠-٩` are accepted on input with `supportNativeDigits`, including the Arabic decimal mark `٫`
+
+Output uses unvocalized citation forms. Case endings that change spelling are applied, such as the accusative `ألفًا` after counts of 11 to 99, but purely diacritical endings are omitted. One known simplification: a dual before a scale word keeps its final nūn, so 200,000 renders as `مائتان ألف` where strict Modern Standard Arabic writes `مائتا ألف`.
 
 ### How a language is chosen
 
@@ -179,22 +184,43 @@ A locale file looks like this:
 ```
 
 
-| Field                 | Purpose                                                                         |
-| --------------------- | ------------------------------------------------------------------------------- |
-| `code`, `name`        | Identity; `code` is emitted as the rendered element's `lang` attribute          |
-| `dir`                 | `"ltr"` or `"rtl"`, emitted as the element's `dir` attribute                    |
-| `digits`              | Ten native digit glyphs, or `null` for languages that use ASCII digits          |
-| `negative`, `decimal` | Words placed before a negative number and between the integer and decimal parts |
-| `numbers`             | Exact number-to-word entries. Must include `"0"`                                |
-| `tens`, `tensJoiner`  | Used to compose a value when `numbers` has no exact entry                       |
-| `scales`              | Place values, which is what defines the numbering system                        |
+| Field                 | Required | Purpose                                                                         |
+| --------------------- | -------- | ------------------------------------------------------------------------------- |
+| `code`, `name`        | yes      | Identity; `code` is emitted as the rendered element's `lang` attribute          |
+| `dir`                 | yes      | `"ltr"` or `"rtl"`, emitted as the element's `dir` attribute                    |
+| `digits`              | yes      | Ten native digit glyphs, or `null` for languages that use ASCII digits          |
+| `negative`, `decimal` | yes      | Words placed before a negative number and between the integer and decimal parts |
+| `numbers`             | yes      | Exact number-to-word entries. Must include `"0"`                                |
+| `tens`, `tensJoiner`  | yes      | Used to compose a value when `numbers` has no exact entry                       |
+| `scales`              | yes      | Place values, which is what defines the numbering system                        |
+| `unitsBeforeTens`     | no       | Reads the ones word before the tens word, for Arabic and German                 |
+| `groupSeparator`      | no       | Joins whole scale groups. Defaults to a space; Arabic uses `" و"`               |
+| `decimalMark`         | no       | Native decimal character accepted on input, such as Arabic `٫`                  |
+| `nameByCount`         | no       | Per-scale alternative names chosen by how many of that scale there are          |
 
 
-Values under 100 are resolved by looking in `numbers` first and composing from `tens` only as a fallback. That is what lets one engine serve both Bangla, which lists all 99 values because they are irregular, and English, which lists 0-19 and composes the rest.
+Values under 100 are resolved by looking in `numbers` first and composing from `tens` only as a fallback. That is what lets one engine serve Bangla, which lists all 99 values because they are irregular, and English, which lists 0-19 and composes the rest.
 
-Registration validates the file and throws on common mistakes, such as a missing `"0"`, an empty `scales` array, or a `digits` array that is not exactly ten glyphs.
+`numbers` is also consulted for a whole scale group before the group is composed, which is how Arabic gets fused hundreds. An entry for `"300"` means 345 renders as `ثلاثمائة وخمسة وأربعون` rather than composing "three" and "hundred" separately.
 
-**What the schema cannot express.** English and Bangla together cover two numbering systems and two ways of forming 0-99, which is a wide net. But a language that puts units before tens (German `einundzwanzig`), or needs gender agreement or dual forms (Arabic), cannot be described by JSON alone and would require changes to the engine.
+`nameByCount` handles languages where a scale word changes shape according to its count:
+
+```json
+{
+  "value": 1000,
+  "name": "ألف",
+  "nameByCount": [
+    { "from": 3, "to": 10, "name": "آلاف" },
+    { "from": 11, "to": 99, "name": "ألفًا" }
+  ]
+}
+```
+
+Ranges are matched against the *trailing* part of the count, not the whole of it, because that is what governs the inflection in the languages that need this. A count of 123 ends in 23 and so takes the 11-99 form, while a round 300 has no trailing part and falls through to the default `name`. Slavic plural bands work the same way.
+
+Registration validates the file and throws on common mistakes, such as a missing `"0"`, an empty `scales` array, a `digits` array that is not exactly ten glyphs, a backwards `nameByCount` range, or `unitsBeforeTens` set on a locale with no `tens` table.
+
+**What the schema cannot express.** The three built-in languages cover two numbering systems, two ways of forming 0-99, both text directions, and count-dependent scale words, which is a wide net. What remains out of reach is agreement between a number and a noun the caller supplies: Arabic's `ثلاث بنات` versus `ثلاثة أولاد` depends on the thing being counted, and this library names numbers rather than declining them.
 
 ### Registry API
 
@@ -209,11 +235,7 @@ import {
 } from 'react-number-word-converter';
 ```
 
-
-
 ## 📚 API Reference
-
-
 
 ### `numberToWords(value, options?)`
 
@@ -235,8 +257,6 @@ numberToWords(12345);
 numberToWords(12345, { locale: 'bn' });
 // Returns: "বারো হাজার তিন শত পঁয়তাল্লিশ"
 ```
-
-
 
 ### `NumberWordConverter`
 
@@ -267,8 +287,6 @@ interface NumberWordConverterProps {
   onConvert={(result) => console.log(result)}
 />
 ```
-
-
 
 ### `NumberWordInput`
 
@@ -305,8 +323,6 @@ interface NumberWordInputProps {
 />
 ```
 
-
-
 ### `useNumberWordConverter`
 
 A custom React hook for number conversion.
@@ -336,11 +352,7 @@ const { wordText, isLoading, error, convert } = useNumberWordConverter(12345);
 convert(67890);
 ```
 
-
-
 ## ⚙️ Configuration Options
-
-
 
 ### `ConverterOptions`
 
@@ -393,9 +405,22 @@ numberToWords('১২৩৪৫', { locale: 'bn', supportNativeDigits: true });
 
 The two columns diverge above 99,999 because the languages group digits differently: English breaks at every three digits, Bangla at every two after the thousand.
 
+Arabic is listed separately rather than as a third column, because right-to-left text sitting between table delimiters is difficult to read in the Markdown source:
+
+- **0** — صفر
+- **1** — واحد
+- **10** — عشرة
+- **25** — خمسة وعشرون
+- **100** — مائة
+- **123** — مائة وثلاثة وعشرون
+- **1,000** — ألف
+- **12,345** — اثنا عشر ألفًا وثلاثمائة وخمسة وأربعون
+- **100,000** — مائة ألف
+- **1,000,000** — مليون
+- **10,000,000** — عشرة ملايين
+- **123,456,789** — مائة وثلاثة وعشرون مليونًا وأربعمائة وستة وخمسون ألفًا وسبعمائة وتسعة وثمانون
+
 ## 🎯 Advanced Examples
-
-
 
 ### Financial Application
 
@@ -419,8 +444,6 @@ function InvoiceAmount({ amount, lang }: { amount: number; lang: string }) {
 //           বারো লাখ চৌত্রিশ হাজার পাঁচ শত সাতষট্টি
 ```
 
-
-
 ### Educational Tool
 
 ```tsx
@@ -439,8 +462,6 @@ function NumberLearningApp() {
   );
 }
 ```
-
-
 
 ### Custom Styling
 
@@ -467,8 +488,6 @@ function StyledConverter({ value }: { value: number }) {
   );
 }
 ```
-
-
 
 ### Form Integration
 
@@ -508,8 +527,6 @@ function PaymentForm() {
 }
 ```
 
-
-
 ### Language Switcher
 
 ```tsx
@@ -535,8 +552,6 @@ function AmountInEveryLanguage({ amount }: { amount: number }) {
 }
 ```
 
-
-
 ### Wiring Into an Existing i18n Setup
 
 Because region tags fall back to their base language, you can pass your app's current locale straight through without mapping it first:
@@ -548,16 +563,15 @@ import { NumberWordConverter } from 'react-number-word-converter';
 function Amount({ value }: { value: number }) {
   const { i18n } = useTranslation();
 
-  // i18n.language may be 'en-GB', 'en-US' or 'bn-BD'; all resolve correctly
+  // i18n.language may be 'en-GB', 'en-US', 'bn-BD' or 'ar-SA'; all resolve
+  // correctly, and the rendered direction follows the resolved language
   return <NumberWordConverter value={value} lang={i18n.language} />;
 }
 ```
 
-
-
 ## 🧪 Testing
 
-The library includes comprehensive tests. To run tests:
+The library ships 131 tests across six suites, covering each built-in language, the locale registry and its validation, both components, and the hook. To run them:
 
 ```bash
 npm test
@@ -568,8 +582,6 @@ To run tests with coverage:
 ```bash
 npm run test:coverage
 ```
-
-
 
 ## 🏗️ Building
 
@@ -586,8 +598,6 @@ This creates:
 - `dist/index.min.js` - Minified UMD build
 - `dist/index.d.ts` - TypeScript definitions
 
-
-
 ## 🌐 Browser Support
 
 - Chrome 60+
@@ -596,14 +606,10 @@ This creates:
 - Edge 79+
 - Internet Explorer 11+ (with polyfills)
 
-
-
 ## 📋 Requirements
 
 - React 16.8.0 or higher
 - Modern browser with ES6 support
-
-
 
 ## 🎨 Styling
 
@@ -642,31 +648,30 @@ The components come with minimal default styling. You can customize the appearan
 }
 ```
 
-
-
 ## 🔧 Troubleshooting
-
-
 
 ### Common Issues
 
 1. `Locale "xx" is not registered`
-  - Only `en` and `bn` ship with the package. Register anything else with `registerLocale()` before rendering
+  - Only `en`, `bn` and `ar` ship with the package. Register anything else with `registerLocale()` before rendering
   - The error lists the currently registered codes, which is usually enough to spot a typo
   - Use `hasLocale(code)` if you need to check without throwing
 2. **Output is in English when you expected another language**
   - Check the precedence order: `lang` beats `lan`, which beats `options.locale`, which beats the global default
   - `setDefaultLocale()` does not re-render mounted components; call it at startup or use the `lang` prop
 3. **Numbers not displaying correctly**
-  - Ensure you have a font covering the language's script, for example a Bengali font for `bn`
+  - Ensure you have a font covering the language's script, for example a Bengali font for `bn` or an Arabic font for `ar`
   - Check that the number is valid (not NaN)
-4. `supportNativeDigits` **seems to do nothing**
-  - It reads the active language's `digits` array, and English has none. Pass `locale: 'bn'` to parse ০-৯
-5. **TypeScript errors**
+4. **Arabic renders left-to-right**
+  - The component sets `dir="rtl"` itself, so check that a parent stylesheet is not forcing `direction: ltr` over it
+  - If you render the string yourself instead of using the component, read `getLocale('ar').dir` and apply it to your own element
+5. `supportNativeDigits` **seems to do nothing**
+  - It reads the active language's `digits` array, and English has none. Pass `locale: 'bn'` to parse ০-৯ or `locale: 'ar'` to parse ٠-٩
+6. **Arabic groups run together with no separator**
+  - `includeSpaces: false` strips the `و` that joins Arabic groups, leaving the words fused. Leave it on for Arabic
+7. **TypeScript errors**
   - Make sure you have the latest version of the package
   - Check that your TypeScript version is 4.0+
-
-
 
 ### Getting Help
 
@@ -677,8 +682,6 @@ If you encounter any issues:
 3. Open an [issue](https://github.com/Sayed021/react-number-word-converter/issues)
 4. Contact the maintainer
 
-
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -688,8 +691,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-
 
 ### Development Setup
 
@@ -710,8 +711,6 @@ npm run dev
 npm run build
 ```
 
-
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -725,8 +724,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Contributors and testers
 - Open source community
 
-
-
 ## 📞 Support
 
 If you have any questions or need help, please:
@@ -736,12 +733,12 @@ If you have any questions or need help, please:
 3. Open an [issue](https://github.com/Sayed021/react-number-word-converter/issues)
 4. Contact the maintainer
 
-
-
 ## 📈 Roadmap
 
+- [x] Schema support for units-before-tens ordering, count-dependent scale words, and right-to-left languages
 - [ ] More built-in languages
-- [ ] Schema support for units-before-tens ordering (German) and gendered forms (Arabic)
+- [ ] Construct-state forms, so Arabic 200,000 reads `مائتا ألف` rather than `مائتان ألف`
+- [ ] Agreement with a caller-supplied noun, for gendered counting
 - [ ] Currency formatting
 - [ ] Ordinal numbers
 - [ ] Values beyond `Number.MAX_SAFE_INTEGER`

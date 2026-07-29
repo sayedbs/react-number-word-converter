@@ -157,7 +157,7 @@ export const NumberWordInput: React.FC<NumberWordInputProps> = ({
   };
 
   return (
-    <div className={`number-word-input-container ${className}`} style={style}>
+    <div className={`number-word-input-container ${className}`} style={style} dir={direction}>
       <input
         type="text"
         value={inputValue}
@@ -165,6 +165,9 @@ export const NumberWordInput: React.FC<NumberWordInputProps> = ({
         placeholder={placeholder}
         disabled={disabled}
         className="number-word-input"
+        // Right-aligns the field for RTL languages. Digit runs still read
+        // left to right under Unicode bidi, so entry is unaffected.
+        dir={direction}
         style={{
           width: '100%',
           padding: '8px 12px',
