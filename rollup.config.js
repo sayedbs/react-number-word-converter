@@ -1,5 +1,6 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import babel from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
@@ -19,6 +20,7 @@ const baseConfig = {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
     }),
     commonjs(),
+    json(),
     babel({
       babelHelpers: 'bundled',
       exclude: 'node_modules/**',
@@ -40,6 +42,7 @@ export default [
       file: packageJson.main,
       format: 'umd',
       name: 'ReactNumberWordConverter',
+      exports: 'named',
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',
@@ -52,6 +55,7 @@ export default [
     output: {
       file: packageJson.module,
       format: 'es',
+      exports: 'named',
     },
   },
   // Minified UMD build
@@ -60,6 +64,9 @@ export default [
     plugins: [
       ...baseConfig.plugins,
       terser({
+        // Running terser inline avoids the worker pool exiting before
+        // renderChunk resolves, which aborted the build after this chunk.
+        maxWorkers: 1,
         compress: {
           drop_console: true,
           drop_debugger: true,
@@ -70,6 +77,7 @@ export default [
       file: 'dist/index.min.js',
       format: 'umd',
       name: 'ReactNumberWordConverter',
+      exports: 'named',
       globals: {
         react: 'React',
         'react-dom': 'ReactDOM',
@@ -83,7 +91,7 @@ export default [
       file: packageJson.types,
       format: 'es',
     },
-    plugins: [dts()],
+    plugins: [json(), dts()],
     external: [/\.css$/],
   },
 ];

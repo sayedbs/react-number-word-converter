@@ -1,36 +1,58 @@
 import React, { useMemo } from 'react';
 import { numberToWords } from './numberToWords';
-import { NumberWordConverterProps } from './types';
+import { getLocale } from './localeRegistry';
+import { ConverterOptions, NumberWordConverterProps } from './types';
+
+/**
+ * Picks the locale code to use, preferring the explicit prop over the
+ * shorthand alias and finally the value inside options.
+ */
+const pickLocaleCode = (
+  lang: string | undefined,
+  lan: string | undefined,
+  options: ConverterOptions
+): string | undefined => lang ?? lan ?? options.locale;
 
 /**
  * React component for displaying number-to-word conversion
  * 
  * @example
  * ```tsx
- * <NumberWordConverter 
- *   value={12345} 
- *   options={{ includeSpaces: true }}
- *   className="number-word-text"
- * />
+ * <NumberWordConverter value={12345} />
+ * <NumberWordConverter value={12345} lang="bn" />
  * ```
  */
 export const NumberWordConverter: React.FC<NumberWordConverterProps> = ({
   value,
+  lang,
+  lan,
   options = {},
   className = '',
   style = {},
   onConvert,
 }) => {
-  const { wordText, error } = useMemo(() => {
+  const { wordText, error, localeCode, direction } = useMemo(() => {
     try {
-      const result = numberToWords(value, options);
+      const code = pickLocaleCode(lang, lan, options);
+      const locale = getLocale(code);
+      const result = numberToWords(value, { ...options, locale: code });
       onConvert?.(result);
-      return { wordText: result, error: null };
+      return {
+        wordText: result,
+        error: null as string | null,
+        localeCode: locale.code,
+        direction: locale.dir,
+      };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Conversion failed';
-      return { wordText: '', error: errorMessage };
+      return {
+        wordText: '',
+        error: errorMessage,
+        localeCode: undefined,
+        direction: undefined,
+      };
     }
-  }, [value, options, onConvert]);
+  }, [value, lang, lan, options, onConvert]);
 
   if (error) {
     return (
@@ -49,8 +71,8 @@ export const NumberWordConverter: React.FC<NumberWordConverterProps> = ({
     <span 
       className={`number-word-converter ${className}`}
       style={style}
-      lang="bn"
-      dir="ltr"
+      lang={localeCode}
+      dir={direction}
     >
       {wordText}
     </span>
@@ -65,6 +87,10 @@ export interface NumberWordInputProps {
   defaultValue?: number | string;
   /** Placeholder text */
   placeholder?: string;
+  /** Locale code such as 'en', 'bn' or 'en-GB'. Takes precedence over options.locale */
+  lang?: string;
+  /** Shorthand alias for lang, used when lang is not supplied */
+  lan?: string;
   /** Configuration options */
   options?: NumberWordConverterProps['options'];
   /** Custom CSS class name */
@@ -82,6 +108,8 @@ export interface NumberWordInputProps {
 export const NumberWordInput: React.FC<NumberWordInputProps> = ({
   defaultValue = '',
   placeholder = 'Enter a number...',
+  lang,
+  lan,
   options = {},
   className = '',
   style = {},
@@ -92,6 +120,17 @@ export const NumberWordInput: React.FC<NumberWordInputProps> = ({
   const [inputValue, setInputValue] = React.useState<string>(String(defaultValue));
   const [wordText, setWordText] = React.useState<string>('');
   const [error, setError] = React.useState<string | null>(null);
+
+  const localeCode = pickLocaleCode(lang, lan, options);
+  let direction: 'ltr' | 'rtl' = 'ltr';
+  let resolvedCode: string | undefined;
+  try {
+    const locale = getLocale(localeCode);
+    direction = locale.dir;
+    resolvedCode = locale.code;
+  } catch {
+    // An unregistered locale surfaces through the conversion error below.
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -105,7 +144,7 @@ export const NumberWordInput: React.FC<NumberWordInputProps> = ({
         return;
       }
 
-      const result = numberToWords(newValue, options);
+      const result = numberToWords(newValue, { ...options, locale: localeCode });
       setWordText(result);
       setError(null);
       onChange?.(newValue, result);
@@ -156,7 +195,7 @@ export const NumberWordInput: React.FC<NumberWordInputProps> = ({
               Error: {error}
             </span>
           ) : (
-            <span lang="bn" dir="ltr">
+            <span lang={resolvedCode} dir={direction}>
               {wordText || 'Enter a number to see number conversion'}
             </span>
           )}

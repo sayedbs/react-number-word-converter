@@ -1,185 +1,161 @@
 import { ConverterOptions } from './types';
+import { LocaleDefinition } from './locales/schema';
+import { getLocale, getRegisteredLocales } from './localeRegistry';
+
+// Registers the built-in en and bn locales as a side effect of importing
+// the converter, so callers never have to register them by hand.
+import './locales';
 
 /**
- * Number-to-words mapping (0–100)
+ * Escapes characters that are meaningful inside a regular expression
+ * character class, so arbitrary digit glyphs can be matched safely.
  */
-const NUMBER_WORDS = {
-  0: 'শূন্য',
-  1: 'এক',
-  2: 'দুই',
-  3: 'তিন',
-  4: 'চার',
-  5: 'পাঁচ',
-  6: 'ছয়',
-  7: 'সাত',
-  8: 'আট',
-  9: 'নয়',
-  10: 'দশ',
-  11: 'এগারো',
-  12: 'বারো',
-  13: 'তেরো',
-  14: 'চৌদ্দ',
-  15: 'পনেরো',
-  16: 'ষোল',
-  17: 'সতেরো',
-  18: 'আঠারো',
-  19: 'উনিশ',
-  20: 'বিশ',
-  21: 'একুশ',
-  22: 'বাইশ',
-  23: 'তেইশ',
-  24: 'চব্বিশ',
-  25: 'পঁচিশ',
-  26: 'ছাব্বিশ',
-  27: 'সাতাশ',
-  28: 'আঠাশ',
-  29: 'ঊনত্রিশ',
-  30: 'ত্রিশ',
-  31: 'একত্রিশ',
-  32: 'বত্রিশ',
-  33: 'তেত্রিশ',
-  34: 'চৌত্রিশ',
-  35: 'পঁয়ত্রিশ',
-  36: 'ছত্রিশ',
-  37: 'সাঁইত্রিশ',
-  38: 'আটত্রিশ',
-  39: 'ঊনচল্লিশ',
-  40: 'চল্লিশ',
-  41: 'একচল্লিশ',
-  42: 'বিয়াল্লিশ',
-  43: 'তেতাল্লিশ',
-  44: 'চুয়াল্লিশ',
-  45: 'পঁয়তাল্লিশ',
-  46: 'ছেচল্লিশ',
-  47: 'সাতচল্লিশ',
-  48: 'আটচল্লিশ',
-  49: 'ঊনপঞ্চাশ',
-  50: 'পঞ্চাশ',
-  51: 'একান্ন',
-  52: 'বায়ান্ন',
-  53: 'তিপ্পান্ন',
-  54: 'চুয়ান্ন',
-  55: 'পঞ্চান্ন',
-  56: 'ছাপ্পান্ন',
-  57: 'সাতান্ন',
-  58: 'আটান্ন',
-  59: 'ঊনষাট',
-  60: 'ষাট',
-  61: 'একষট্টি',
-  62: 'বাষট্টি',
-  63: 'তেষট্টি',
-  64: 'চৌষট্টি',
-  65: 'পঁয়ষট্টি',
-  66: 'ছেষট্টি',
-  67: 'সাতষট্টি',
-  68: 'আটষট্টি',
-  69: 'ঊনসত্তর',
-  70: 'সত্তর',
-  71: 'একাত্তর',
-  72: 'বাহাত্তর',
-  73: 'তিয়াত্তর',
-  74: 'চুয়াত্তর',
-  75: 'পঁচাত্তর',
-  76: 'ছিয়াত্তর',
-  77: 'সাতাত্তর',
-  78: 'আটাত্তর',
-  79: 'ঊনআশি',
-  80: 'আশি',
-  81: 'একাশি',
-  82: 'বিরাশি',
-  83: 'তিরাশি',
-  84: 'চুরাশি',
-  85: 'পঁচাশি',
-  86: 'ছিয়াশি',
-  87: 'সাতাশি',
-  88: 'আটাশি',
-  89: 'ঊননব্বই',
-  90: 'নব্বই',
-  91: 'একানব্বই',
-  92: 'বিরানব্বই',
-  93: 'তিরানব্বই',
-  94: 'চুরানব্বই',
-  95: 'পঁচানব্বই',
-  96: 'ছিয়ানব্বই',
-  97: 'সাতানব্বই',
-  98: 'আটানব্বই',
-  99: 'নিরানব্বই',
-  100: 'এক শত',
+const escapeForCharClass = (value: string): string => value.replace(/[\\\]^-]/g, '\\$&');
+
+/** Rewrites a locale's native digits into ASCII digits. */
+const fromNativeDigits = (text: string, locale: LocaleDefinition): string => {
+  if (!locale.digits) {
+    return text;
+  }
+  return text
+    .split('')
+    .map((char) => {
+      const index = locale.digits ? locale.digits.indexOf(char) : -1;
+      return index === -1 ? char : String(index);
+    })
+    .join('');
 };
 
-/**
- * number place value names following Indian numbering system
- */
-const PLACE_VALUES = {
-  1: '', // ones
-  10: '', // tens
-  100: 'শত',
-  1000: 'হাজার',
-  100000: 'লাখ',
-  10000000: 'কোটি',
-};
-
-/**
- * native digits (০-৯) mapping (০-৯)
- */
-const NATIVE_DIGITS = {
-  '০': '0',
-  '১': '1',
-  '২': '2',
-  '৩': '3',
-  '৪': '4',
-  '৫': '5',
-  '৬': '6',
-  '৭': '7',
-  '৮': '8',
-  '৯': '9',
-};
-
-/**
- * Converts English digits to native digits (০-৯)
- */
-const convertToNativeDigits = (text: string): string => {
+/** Rewrites ASCII digits into a locale's native digits. */
+const toNativeDigits = (text: string, locale: LocaleDefinition): string => {
+  if (!locale.digits) {
+    return text;
+  }
   return text.replace(/[0-9]/g, (digit) => {
-    const nativeDigitMap: { [key: string]: string } = {
-      '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪',
-      '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯'
-    };
-    return nativeDigitMap[digit] || digit;
+    const glyphs = locale.digits as string[];
+    return glyphs[Number(digit)] ?? digit;
   });
 };
 
 /**
- * Converts native digits (০-৯) to English digits
+ * Renders a value below one hundred.
+ *
+ * Locales with an exact entry win outright, which covers Bangla's 99
+ * irregular words. Everything else is composed from a tens word and a ones
+ * word, which covers English.
  */
-const convertFromNativeDigits = (text: string): string => {
-  return text.replace(/[০-৯]/g, (digit) => NATIVE_DIGITS[digit as keyof typeof NATIVE_DIGITS] || digit);
+const convertBelowHundred = (num: number, locale: LocaleDefinition): string => {
+  const exact = locale.numbers[String(num)];
+  if (exact !== undefined) {
+    return exact;
+  }
+
+  const tensKey = String(Math.floor(num / 10) * 10);
+  const tensWord = locale.tens[tensKey];
+  if (tensWord === undefined) {
+    throw new Error(`Locale "${locale.code}" has no word for ${num}`);
+  }
+
+  const onesDigit = num % 10;
+  if (onesDigit === 0) {
+    return tensWord;
+  }
+
+  const onesWord = locale.numbers[String(onesDigit)];
+  if (onesWord === undefined) {
+    throw new Error(`Locale "${locale.code}" has no word for ${onesDigit}`);
+  }
+
+  return `${tensWord}${locale.tensJoiner}${onesWord}`;
 };
 
 /**
- * Converts a number to its number word representation
+ * Renders a non-negative integer by walking the locale's scales from
+ * largest to smallest.
+ *
+ * Recursing on each scale's count is what lets one loop serve both the
+ * Indian system (crore, lakh, thousand, hundred) and the Western short
+ * scale, and it also handles values larger than the biggest declared scale.
+ */
+const convertInteger = (
+  num: number,
+  locale: LocaleDefinition,
+  groupSeparator: string
+): string => {
+  const exact = locale.numbers[String(num)];
+  if (exact !== undefined) {
+    return exact;
+  }
+
+  if (num < 100) {
+    return convertBelowHundred(num, locale);
+  }
+
+  const scalesDescending = [...locale.scales].sort((a, b) => b.value - a.value);
+  const groups: string[] = [];
+  let remainder = num;
+
+  scalesDescending.forEach((scale) => {
+    if (remainder >= scale.value) {
+      const count = Math.floor(remainder / scale.value);
+      // The space between a count and its scale name is intentionally
+      // literal; groupSeparator only joins whole groups.
+      groups.push(`${convertInteger(count, locale, groupSeparator)} ${scale.name}`);
+      remainder %= scale.value;
+    }
+  });
+
+  // Registration rejects locales that could reach here, but a locale object
+  // mutated after registration still could, and recursing on an unchanged
+  // remainder would overflow the stack.
+  if (remainder === num) {
+    throw new Error(`Locale "${locale.code}" has no scale able to express ${num}`);
+  }
+
+  if (remainder > 0) {
+    groups.push(convertInteger(remainder, locale, groupSeparator));
+  }
+
+  return groups.join(groupSeparator);
+};
+
+/**
+ * Converts a number to its word representation in the selected language.
+ *
  * @param num - The number to convert
- * @param options - Configuration options
- * @returns number word representation of the number
+ * @param options - Configuration options, including the locale code
+ * @returns Word representation of the number
+ *
+ * @example
+ * ```ts
+ * numberToWords(12345);                     // "twelve thousand three hundred forty-five"
+ * numberToWords(12345, { locale: 'bn' });   // "বারো হাজার তিন শত পঁয়তাল্লিশ"
+ * ```
  */
 export const numberToWords = (num: number | string, options: ConverterOptions = {}): string => {
   const {
     includeSpaces = true,
     supportNativeDigits = false,
     outputNativeDigits = false,
-    separator = ' '
+    separator = ' ',
+    locale: localeCode,
   } = options;
 
+  // Resolved before the try block so an unregistered locale surfaces its own
+  // message instead of being rewrapped as a conversion failure.
+  const locale = getLocale(localeCode);
+
   try {
-    // Handle string input
     let inputNumber: number;
+
     if (typeof num === 'string') {
-      if (supportNativeDigits) {
-        // Check if string contains only native digits (০-৯) and valid characters
-        if (!/^[০-৯\s\.\-]+$/.test(num)) {
+      if (supportNativeDigits && locale.digits) {
+        const digitClass = locale.digits.map(escapeForCharClass).join('');
+        const nativePattern = new RegExp(`^[${digitClass}\\s.\\-]+$`);
+        if (!nativePattern.test(num)) {
           throw new Error('Invalid number input');
         }
-        const englishString = convertFromNativeDigits(num);
-        inputNumber = parseFloat(englishString);
+        inputNumber = parseFloat(fromNativeDigits(num, locale));
       } else {
         inputNumber = parseFloat(num);
       }
@@ -187,147 +163,80 @@ export const numberToWords = (num: number | string, options: ConverterOptions = 
       inputNumber = num;
     }
 
-    // Validate input after conversion
     if (isNaN(inputNumber)) {
       throw new Error('Invalid number input');
     }
 
-    // Handle zero
     if (inputNumber === 0) {
-      const result = NUMBER_WORDS[0];
-      return outputNativeDigits ? convertToNativeDigits(result) : result;
+      const result = locale.numbers['0'];
+      return outputNativeDigits ? toNativeDigits(result, locale) : result;
     }
 
-    // Handle negative numbers
     if (inputNumber < 0) {
       const positiveResult = numberToWords(Math.abs(inputNumber), options);
-      return `ঋণাত্মক ${positiveResult}`;
+      return `${locale.negative} ${positiveResult}`;
     }
 
-    // Handle decimal numbers
     if (inputNumber % 1 !== 0) {
+      const text = inputNumber.toString();
+
+      // Very small magnitudes stringify as "1e-7", which has no decimal part
+      // to read digit by digit.
+      if (text.includes('e') || text.includes('E')) {
+        throw new Error(`Exponential notation (${text}) is not supported`);
+      }
+
       const integerPart = Math.floor(inputNumber);
-      const decimalPart = inputNumber.toString().split('.')[1];
-      
+      const decimalPart = text.split('.')[1];
+
       const integerWords = numberToWords(integerPart, options);
       const decimalWords = decimalPart
         .split('')
-        .map(digit => NUMBER_WORDS[parseInt(digit) as keyof typeof NUMBER_WORDS])
+        .map((digit) => {
+          const word = locale.numbers[digit];
+          if (word === undefined) {
+            throw new Error(`Locale "${locale.code}" has no word for the digit "${digit}"`);
+          }
+          return word;
+        })
         .join(includeSpaces ? separator : '');
-      
-      const result = `${integerWords} দশমিক ${decimalWords}`;
-      return outputNativeDigits ? convertToNativeDigits(result) : result;
+
+      const result = `${integerWords} ${locale.decimal} ${decimalWords}`;
+      return outputNativeDigits ? toNativeDigits(result, locale) : result;
     }
 
-    // Convert to integer
-    const integerNumber = Math.floor(inputNumber);
-    
-    // Handle very large numbers (beyond crore)
-    if (integerNumber >= 100000000) {
-      const crorePart = Math.floor(integerNumber / 10000000);
-      const remainder = integerNumber % 10000000;
-      
-      const croreWords = numberToWords(crorePart, options);
-      const remainderWords = remainder > 0 ? numberToWords(remainder, options) : '';
-      
-      const result = remainderWords 
-        ? `${croreWords} কোটি ${remainderWords}`
-        : `${croreWords} কোটি`;
-      
-      return outputNativeDigits ? convertToNativeDigits(result) : result;
-    }
-
-    // Main conversion logic
-    const result = convertNumberToWords(integerNumber, includeSpaces, separator);
-    return outputNativeDigits ? convertToNativeDigits(result) : result;
-
+    const groupSeparator = includeSpaces ? separator : '';
+    const result = convertInteger(Math.floor(inputNumber), locale, groupSeparator);
+    return outputNativeDigits ? toNativeDigits(result, locale) : result;
   } catch (error) {
     throw new Error(`Conversion failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 
 /**
- * Core conversion logic for numbers
+ * Checks whether a string contains only native digits.
+ *
+ * With no locale given, the string is matched against the digits of every
+ * registered locale, which keeps it useful as a general detector.
  */
-const convertNumberToWords = (num: number, includeSpaces: boolean, separator: string): string => {
-  if (num === 0) return NUMBER_WORDS[0];
-  
-  const words: string[] = [];
-  const separatorStr = includeSpaces ? separator : '';
-  
-  // Crore (1,00,00,000)
-  if (num >= 10000000) {
-    const crore = Math.floor(num / 10000000);
-    if (crore === 1) {
-      words.push('এক কোটি');
-    } else {
-      words.push(convertHundreds(crore) + ' কোটি');
+export const isNativeDigitString = (str: string, localeCode?: string): boolean => {
+  const matchesLocale = (locale: LocaleDefinition): boolean => {
+    if (!locale.digits) {
+      return false;
     }
-    num %= 10000000;
+    const digitClass = locale.digits.map(escapeForCharClass).join('');
+    return new RegExp(`^[${digitClass}\\s]+$`).test(str);
+  };
+
+  if (localeCode) {
+    return matchesLocale(getLocale(localeCode));
   }
-  
-  // Lakh (1,00,000)
-  if (num >= 100000) {
-    const lakh = Math.floor(num / 100000);
-    if (lakh === 1) {
-      words.push('এক লাখ');
-    } else {
-      words.push(convertHundreds(lakh) + ' লাখ');
-    }
-    num %= 100000;
-  }
-  
-  // Thousand (1,000)
-  if (num >= 1000) {
-    const thousand = Math.floor(num / 1000);
-    if (thousand === 1) {
-      words.push('এক হাজার');
-    } else {
-      words.push(convertHundreds(thousand) + ' হাজার');
-    }
-    num %= 1000;
-  }
-  
-  // Hundred (100)
-  if (num >= 100) {
-    const hundred = Math.floor(num / 100);
-    if (hundred === 1) {
-      words.push('এক শত');
-    } else {
-      words.push(convertHundreds(hundred) + ' শত');
-    }
-    num %= 100;
-  }
-  
-  // Tens and ones
-  if (num > 0) {
-    words.push(convertHundreds(num));
-  }
-  
-  return words.join(separatorStr);
+
+  return getRegisteredLocales().some((code) => matchesLocale(getLocale(code)));
 };
 
 /**
- * Converts numbers 1-99 to number words
- */
-const convertHundreds = (num: number): string => {
-  if (num === 0) return '';
-  if (num <= 99) return NUMBER_WORDS[num as keyof typeof NUMBER_WORDS] || '';
-  
-  // For numbers 100-999, this function shouldn't be called directly
-  // as it's handled in the main conversion logic
-  return '';
-};
-
-/**
- * Utility function to validate if a string contains only native digits (০-৯)
- */
-export const isNativeDigitString = (str: string): boolean => {
-  return /^[০-৯\s]+$/.test(str);
-};
-
-/**
- * Utility function to validate if a string contains only English digits
+ * Checks whether a string contains only ASCII digits
  */
 export const isEnglishDigitString = (str: string): boolean => {
   return /^[0-9\s]+$/.test(str);

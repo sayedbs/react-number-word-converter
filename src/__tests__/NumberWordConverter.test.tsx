@@ -5,52 +5,52 @@ import { NumberWordConverter, NumberWordInput } from '../NumberWordConverter';
 
 describe('NumberWordConverter', () => {
   test('should render converted number correctly', () => {
-    render(<NumberWordConverter value={123} />);
+    render(<NumberWordConverter value={123} lang="bn" />);
     expect(screen.getByText('এক শত তেইশ')).toBeInTheDocument();
   });
 
   test('should handle zero', () => {
-    render(<NumberWordConverter value={0} />);
+    render(<NumberWordConverter value={0} lang="bn" />);
     expect(screen.getByText('শূন্য')).toBeInTheDocument();
   });
 
   test('should handle negative numbers', () => {
-    render(<NumberWordConverter value={-123} />);
+    render(<NumberWordConverter value={-123} lang="bn" />);
     expect(screen.getByText('ঋণাত্মক এক শত তেইশ')).toBeInTheDocument();
   });
 
   test('should handle decimal numbers', () => {
-    render(<NumberWordConverter value={10.5} />);
+    render(<NumberWordConverter value={10.5} lang="bn" />);
     expect(screen.getByText('দশ দশমিক পাঁচ')).toBeInTheDocument();
   });
 
   test('should handle string input', () => {
-    render(<NumberWordConverter value="123" />);
+    render(<NumberWordConverter value="123" lang="bn" />);
     expect(screen.getByText('এক শত তেইশ')).toBeInTheDocument();
   });
 
   test('should apply custom className', () => {
-    render(<NumberWordConverter value={123} className="custom-class" />);
+    render(<NumberWordConverter value={123} lang="bn" className="custom-class" />);
     const element = screen.getByText('এক শত তেইশ');
     expect(element).toHaveClass('custom-class');
   });
 
   test('should apply custom styles', () => {
     const customStyle = { color: 'red', fontSize: '20px' };
-    render(<NumberWordConverter value={123} style={customStyle} />);
+    render(<NumberWordConverter value={123} lang="bn" style={customStyle} />);
     const element = screen.getByText('এক শত তেইশ');
     expect(element).toHaveStyle('color: red; font-size: 20px');
   });
 
   test('should call onConvert callback', () => {
     const onConvert = jest.fn();
-    render(<NumberWordConverter value={123} onConvert={onConvert} />);
+    render(<NumberWordConverter value={123} lang="bn" onConvert={onConvert} />);
     expect(onConvert).toHaveBeenCalledWith('এক শত তেইশ');
   });
 
   test('should handle conversion options', () => {
     const options = { includeSpaces: false };
-    render(<NumberWordConverter value={123} options={options} />);
+    render(<NumberWordConverter value={123} lang="bn" options={options} />);
     expect(screen.getByText('এক শততেইশ')).toBeInTheDocument();
   });
 
@@ -60,10 +60,44 @@ describe('NumberWordConverter', () => {
   });
 
   test('should have proper accessibility attributes', () => {
-    render(<NumberWordConverter value={123} />);
+    render(<NumberWordConverter value={123} lang="bn" />);
     const element = screen.getByText('এক শত তেইশ');
     expect(element).toHaveAttribute('lang', 'bn');
     expect(element).toHaveAttribute('dir', 'ltr');
+  });
+});
+
+describe('NumberWordConverter language selection', () => {
+  test('should default to English when no language is given', () => {
+    render(<NumberWordConverter value={12345} />);
+    const element = screen.getByText('twelve thousand three hundred forty-five');
+    expect(element).toHaveAttribute('lang', 'en');
+  });
+
+  test('should switch language with the lang prop', () => {
+    render(<NumberWordConverter value={12345} lang="bn" />);
+    expect(screen.getByText('বারো হাজার তিন শত পঁয়তাল্লিশ')).toBeInTheDocument();
+  });
+
+  test('should accept lan as a shorthand alias', () => {
+    render(<NumberWordConverter value={123} lan="bn" />);
+    expect(screen.getByText('এক শত তেইশ')).toBeInTheDocument();
+  });
+
+  test('should prefer lang over lan and over options.locale', () => {
+    render(<NumberWordConverter value={123} lang="en" lan="bn" options={{ locale: 'bn' }} />);
+    expect(screen.getByText('one hundred twenty-three')).toBeInTheDocument();
+  });
+
+  test('should fall back from a region tag to its base language', () => {
+    render(<NumberWordConverter value={123} lang="en-GB" />);
+    const element = screen.getByText('one hundred twenty-three');
+    expect(element).toHaveAttribute('lang', 'en');
+  });
+
+  test('should show an error for an unregistered language', () => {
+    render(<NumberWordConverter value={123} lang="nope" />);
+    expect(screen.getByText(/is not registered/)).toBeInTheDocument();
   });
 });
 
@@ -79,13 +113,24 @@ describe('NumberWordInput', () => {
   });
 
   test('should convert input in real-time', async () => {
-    render(<NumberWordInput />);
+    render(<NumberWordInput lang="bn" />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: '123' } });
     
     await waitFor(() => {
       expect(screen.getByText('এক শত তেইশ')).toBeInTheDocument();
+    });
+  });
+
+  test('should convert in English by default', async () => {
+    render(<NumberWordInput />);
+    const input = screen.getByRole('textbox');
+
+    fireEvent.change(input, { target: { value: '12345' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('twelve thousand three hundred forty-five')).toBeInTheDocument();
     });
   });
 
@@ -113,7 +158,7 @@ describe('NumberWordInput', () => {
 
   test('should call onChange callback', async () => {
     const onChange = jest.fn();
-    render(<NumberWordInput onChange={onChange} />);
+    render(<NumberWordInput lang="bn" onChange={onChange} />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: '123' } });
@@ -155,7 +200,7 @@ describe('NumberWordInput', () => {
 
   test('should handle conversion options', async () => {
     const options = { includeSpaces: false };
-    render(<NumberWordInput options={options} />);
+    render(<NumberWordInput lang="bn" options={options} />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: '123' } });

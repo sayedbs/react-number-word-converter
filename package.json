@@ -1,7 +1,7 @@
 {
   "name": "react-number-word-converter",
   "version": "1.0.0",
-  "description": "A React utility plugin that converts numeric values into number words",
+  "description": "A React utility plugin that converts numeric values into number words in any language, with English and Bangla built in",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -21,13 +21,18 @@
   "keywords": [
     "react",
     "number-word",
-    "bengali",
+    "number-to-words",
     "number",
     "converter",
     "words",
     "i18n",
     "internationalization",
-    "number-to-words"
+    "localization",
+    "multilingual",
+    "locale",
+    "english",
+    "bengali",
+    "bangla"
   ],
   "author": "Sayed021",
   "license": "MIT",
@@ -42,6 +47,7 @@
     "@babel/preset-typescript": "^7.23.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@testing-library/jest-dom": "^6.1.4",

@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
   NumberWordConverter, 
   NumberWordInput, 
   useNumberWordConverter,
   numberToWords,
+  getRegisteredLocales,
+  getLocale,
   ConverterOptions 
 } from 'react-number-word-converter';
 
+const LANGUAGE_CHOICES = [
+  { code: 'en', label: 'English (en)' },
+  { code: 'bn', label: 'Bangla (bn)' },
+  { code: 'en-GB', label: 'British English (en-GB, falls back to en)' },
+];
+
 const App: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('12345');
+  const [lang, setLang] = useState<string>('en');
   const [options, setOptions] = useState<ConverterOptions>({
     includeSpaces: true,
     supportNativeDigits: false,
@@ -16,7 +25,16 @@ const App: React.FC = () => {
     separator: ' '
   });
 
-  const { wordText, isLoading, error } = useNumberWordConverter(inputValue, options);
+  // Memoized so the hook does not see a new options object on every render.
+  const activeOptions = useMemo<ConverterOptions>(
+    () => ({ ...options, locale: lang }),
+    [options, lang]
+  );
+
+  const { wordText, isLoading, error } = useNumberWordConverter(inputValue, activeOptions);
+
+  const resolvedLocale = getLocale(lang);
+  const registeredLocales = getRegisteredLocales();
 
   const exampleNumbers = [
     0, 1, 10, 25, 100, 123, 1000, 1234, 10000, 10005, 
@@ -35,8 +53,9 @@ const App: React.FC = () => {
       <header className="header">
         <h1>🔢 React Number Word Converter</h1>
         <p>
-          A powerful React plugin that converts numeric values into number words. 
-          Perfect for financial applications, educational tools, and localized interfaces.
+          A powerful React plugin that converts numeric values into number words
+          in any registered language. Perfect for financial applications,
+          educational tools, and localized interfaces.
         </p>
       </header>
 
@@ -53,6 +72,25 @@ const App: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Enter a number (e.g., 12345)"
             />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="language-select">Language:</label>
+            <select
+              id="language-select"
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+            >
+              {LANGUAGE_CHOICES.map((choice) => (
+                <option key={choice.code} value={choice.code}>
+                  {choice.label}
+                </option>
+              ))}
+            </select>
+            <small>
+              Requested "{lang}", resolved to "{resolvedLocale.code}" ({resolvedLocale.name}).
+              Registered: {registeredLocales.join(', ')}.
+            </small>
           </div>
 
           <div className="options-grid">
@@ -73,7 +111,9 @@ const App: React.FC = () => {
                 checked={options.supportNativeDigits}
                 onChange={(e) => handleOptionChange('supportNativeDigits', e.target.checked)}
               />
-              <label htmlFor="supportNativeDigits">Support native digits (০-৯)</label>
+              <label htmlFor="supportNativeDigits">
+                Support native digits{resolvedLocale.digits ? ` (${resolvedLocale.digits.join('')})` : ' (none in this language)'}
+              </label>
             </div>
 
             <div className="option-item">
@@ -83,7 +123,9 @@ const App: React.FC = () => {
                 checked={options.outputNativeDigits}
                 onChange={(e) => handleOptionChange('outputNativeDigits', e.target.checked)}
               />
-              <label htmlFor="outputNativeDigits">Output native digits (০-৯)</label>
+              <label htmlFor="outputNativeDigits">
+                Output native digits{resolvedLocale.digits ? ` (${resolvedLocale.digits.join('')})` : ' (none in this language)'}
+              </label>
             </div>
           </div>
 
@@ -116,9 +158,27 @@ const App: React.FC = () => {
           <NumberWordInput
             defaultValue="12345"
             placeholder="Type any number here..."
+            lang={lang}
             options={options}
             showConvertedText={true}
           />
+        </div>
+
+        {/* Side-by-side languages */}
+        <div className="card">
+          <h2>🌍 One Number, Every Language</h2>
+          <p>
+            The same value rendered in each registered language. English uses the
+            Western short scale, Bangla uses the Indian system.
+          </p>
+          <div className="examples">
+            {registeredLocales.map((code) => (
+              <div key={code} className="example-item">
+                <h3>{getLocale(code).name} ({code})</h3>
+                <NumberWordConverter value={12345} lang={code} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Component Examples */}
@@ -127,13 +187,14 @@ const App: React.FC = () => {
           <div className="examples">
             <div className="example-item">
               <h3>Basic Converter</h3>
-              <NumberWordConverter value={12345} />
+              <NumberWordConverter value={12345} lang={lang} />
             </div>
             
             <div className="example-item">
               <h3>Without Spaces</h3>
               <NumberWordConverter 
                 value={12345} 
+                lang={lang}
                 options={{ includeSpaces: false }} 
               />
             </div>
@@ -142,23 +203,24 @@ const App: React.FC = () => {
               <h3>Custom Separator</h3>
               <NumberWordConverter 
                 value={12345} 
+                lang={lang}
                 options={{ separator: '-' }} 
               />
             </div>
             
             <div className="example-item">
               <h3>Decimal Number</h3>
-              <NumberWordConverter value={123.45} />
+              <NumberWordConverter value={123.45} lang={lang} />
             </div>
             
             <div className="example-item">
               <h3>Negative Number</h3>
-              <NumberWordConverter value={-12345} />
+              <NumberWordConverter value={-12345} lang={lang} />
             </div>
             
             <div className="example-item">
               <h3>Large Number</h3>
-              <NumberWordConverter value={123456789} />
+              <NumberWordConverter value={123456789} lang={lang} />
             </div>
           </div>
         </div>
@@ -172,7 +234,7 @@ const App: React.FC = () => {
               <div key={num} className="example-item">
                 <div className="example-number">{num.toLocaleString()}</div>
                 <div className="example-words">
-                  {numberToWords(num, options)}
+                  {numberToWords(num, activeOptions)}
                 </div>
               </div>
             ))}
@@ -184,21 +246,21 @@ const App: React.FC = () => {
           <h2>✨ Features</h2>
           <div className="features">
             <div className="feature">
-              <div className="feature-icon">🔢</div>
-              <h4>Complete Number Support</h4>
-              <p>Supports numbers from 0 to billions with proper Indian numbering system (thousand, lakh, crore)</p>
+              <div className="feature-icon">🌍</div>
+              <h4>Multi-language</h4>
+              <p>English and Bangla built in as JSON locale files, with registerLocale() for your own</p>
             </div>
             
             <div className="feature">
-              <div className="feature-icon">🌐</div>
-              <h4>Cross-browser Compatible</h4>
-              <p>Works seamlessly across all modern browsers with proper Unicode support</p>
+              <div className="feature-icon">🔢</div>
+              <h4>Two Numbering Systems</h4>
+              <p>Western short scale (thousand, million, billion) and Indian system (hazar, lakh, crore)</p>
             </div>
             
             <div className="feature">
               <div className="feature-icon">⚙️</div>
               <h4>Highly Configurable</h4>
-              <p>Customizable spacing, separators, and support for native digits (০-৯)</p>
+              <p>Customizable spacing, separators, and per-language native digit support</p>
             </div>
             
             <div className="feature">
@@ -225,33 +287,41 @@ const App: React.FC = () => {
         <div className="card">
           <h2>💻 Usage Examples</h2>
           <div style={{ backgroundColor: '#f7fafc', padding: '20px', borderRadius: '8px', fontFamily: 'monospace' }}>
-            <h3>Basic Usage:</h3>
+            <h3>Basic Usage (English is the default):</h3>
             <pre>{`import { NumberWordConverter } from 'react-number-word-converter';
 
 <NumberWordConverter value={12345} />
-// Output: বারো হাজার তিন শত পঁয়তাল্লিশ`}</pre>
+// Output: twelve thousand three hundred forty-five`}</pre>
+
+            <h3>Choosing a Language:</h3>
+            <pre>{`<NumberWordConverter value={12345} lang="bn" />
+// Output: বারো হাজার তিন শত পঁয়তাল্লিশ
+
+<NumberWordConverter value={12345} lang="en-GB" />
+// Region tags fall back to their base language, so this uses "en"`}</pre>
 
             <h3>With Custom Options:</h3>
             <pre>{`<NumberWordConverter 
   value={12345} 
-  options={{ 
-    includeSpaces: false,
-    separator: '-' 
-  }} 
+  lang="bn"
+  options={{ separator: '-' }} 
 />
-// Output: বারো-হাজার-তিন-শত-পঁয়তাল্লিশ`}</pre>
+// Output: বারো হাজার-তিন শত-পঁয়তাল্লিশ`}</pre>
 
             <h3>Using the Hook:</h3>
             <pre>{`import { useNumberWordConverter } from 'react-number-word-converter';
 
-const { wordText, convert } = useNumberWordConverter(12345);
+const { wordText } = useNumberWordConverter(12345, { locale: 'bn' });
 // wordText: "বারো হাজার তিন শত পঁয়তাল্লিশ"`}</pre>
 
-            <h3>Direct Function Call:</h3>
-            <pre>{`import { numberToWords } from 'react-number-word-converter';
+            <h3>Adding Your Own Language:</h3>
+            <pre>{`import { registerLocale, setDefaultLocale } from 'react-number-word-converter';
+import fr from './fr.json';
 
-const result = numberToWords(12345);
-// result: "বারো হাজার তিন শত পঁয়তাল্লিশ"`}</pre>
+registerLocale('fr', fr);
+setDefaultLocale('fr'); // optional, call once at startup
+
+<NumberWordConverter value={12345} lang="fr" />`}</pre>
           </div>
         </div>
       </div>
