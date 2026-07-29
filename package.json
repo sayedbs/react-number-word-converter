@@ -1,7 +1,7 @@
 {
   "name": "react-number-word-converter",
   "version": "1.0.0",
-  "description": "A React utility plugin that converts numeric values into number words in any language, with English, Bangla and Arabic built in and automatic right-to-left rendering",
+  "description": "One plugin all language — React number to words converter by sayed021. Convert numbers to English, Bangla, Arabic or any custom locale with RTL, i18n, and TypeScript support.",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -20,23 +20,39 @@
   },
   "keywords": [
     "react",
-    "number-word",
+    "react-plugin",
+    "react-component",
     "number-to-words",
-    "number",
-    "converter",
+    "number-word",
+    "number-to-word",
+    "number-converter",
     "words",
+    "converter",
     "i18n",
     "internationalization",
     "localization",
+    "l10n",
     "multilingual",
+    "multi-language",
     "locale",
+    "registerLocale",
     "english",
     "bengali",
     "bangla",
     "arabic",
-    "rtl"
+    "rtl",
+    "right-to-left",
+    "typescript",
+    "hook",
+    "sayed021",
+    "Sayedbs",
+    "react-number-word-converter",
+    "one-plugin-all-language"
   ],
-  "author": "Sayed021",
+  "author": {
+    "name": "sayed021",
+    "url": "https://github.com/Sayedbs"
+  },
   "license": "MIT",
   "peerDependencies": {
     "react": ">=16.8.0",
@@ -71,10 +87,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Sayed021/react-number-word-converter.git"
+    "url": "git+https://github.com/Sayedbs/react-number-word-converter.git"
   },
   "bugs": {
-    "url": "https://github.com/Sayed021/react-number-word-converter/issues"
+    "url": "https://github.com/Sayedbs/react-number-word-converter/issues"
   },
-  "homepage": "https://github.com/Sayed021/react-number-word-converter#readme"
+  "homepage": "https://github.com/Sayedbs/react-number-word-converter#readme"
 }
