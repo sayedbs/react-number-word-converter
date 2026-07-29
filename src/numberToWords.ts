@@ -1,9 +1,9 @@
 import { ConverterOptions } from './types';
 
 /**
- * Bangla number words mapping
+ * Number-to-words mapping (0–100)
  */
-const BANGLA_NUMBERS = {
+const NUMBER_WORDS = {
   0: 'শূন্য',
   1: 'এক',
   2: 'দুই',
@@ -108,7 +108,7 @@ const BANGLA_NUMBERS = {
 };
 
 /**
- * Bangla place value names following Indian numbering system
+ * number place value names following Indian numbering system
  */
 const PLACE_VALUES = {
   1: '', // ones
@@ -120,9 +120,9 @@ const PLACE_VALUES = {
 };
 
 /**
- * Bangla digits mapping (০-৯)
+ * native digits (০-৯) mapping (০-৯)
  */
-const BANGLA_DIGITS = {
+const NATIVE_DIGITS = {
   '০': '0',
   '১': '1',
   '২': '2',
@@ -136,36 +136,36 @@ const BANGLA_DIGITS = {
 };
 
 /**
- * Converts English digits to Bangla digits
+ * Converts English digits to native digits (০-৯)
  */
-const convertToBanglaDigits = (text: string): string => {
+const convertToNativeDigits = (text: string): string => {
   return text.replace(/[0-9]/g, (digit) => {
-    const banglaDigitMap: { [key: string]: string } = {
+    const nativeDigitMap: { [key: string]: string } = {
       '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪',
       '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯'
     };
-    return banglaDigitMap[digit] || digit;
+    return nativeDigitMap[digit] || digit;
   });
 };
 
 /**
- * Converts Bangla digits to English digits
+ * Converts native digits (০-৯) to English digits
  */
-const convertFromBanglaDigits = (text: string): string => {
-  return text.replace(/[০-৯]/g, (digit) => BANGLA_DIGITS[digit as keyof typeof BANGLA_DIGITS] || digit);
+const convertFromNativeDigits = (text: string): string => {
+  return text.replace(/[০-৯]/g, (digit) => NATIVE_DIGITS[digit as keyof typeof NATIVE_DIGITS] || digit);
 };
 
 /**
- * Converts a number to its Bangla word representation
+ * Converts a number to its number word representation
  * @param num - The number to convert
  * @param options - Configuration options
- * @returns Bangla word representation of the number
+ * @returns number word representation of the number
  */
-export const numberToBanglaWords = (num: number | string, options: ConverterOptions = {}): string => {
+export const numberToWords = (num: number | string, options: ConverterOptions = {}): string => {
   const {
     includeSpaces = true,
-    supportBanglaDigits = false,
-    outputBanglaDigits = false,
+    supportNativeDigits = false,
+    outputNativeDigits = false,
     separator = ' '
   } = options;
 
@@ -173,12 +173,12 @@ export const numberToBanglaWords = (num: number | string, options: ConverterOpti
     // Handle string input
     let inputNumber: number;
     if (typeof num === 'string') {
-      if (supportBanglaDigits) {
-        // Check if string contains only Bangla digits and valid characters
+      if (supportNativeDigits) {
+        // Check if string contains only native digits (০-৯) and valid characters
         if (!/^[০-৯\s\.\-]+$/.test(num)) {
           throw new Error('Invalid number input');
         }
-        const englishString = convertFromBanglaDigits(num);
+        const englishString = convertFromNativeDigits(num);
         inputNumber = parseFloat(englishString);
       } else {
         inputNumber = parseFloat(num);
@@ -194,13 +194,13 @@ export const numberToBanglaWords = (num: number | string, options: ConverterOpti
 
     // Handle zero
     if (inputNumber === 0) {
-      const result = BANGLA_NUMBERS[0];
-      return outputBanglaDigits ? convertToBanglaDigits(result) : result;
+      const result = NUMBER_WORDS[0];
+      return outputNativeDigits ? convertToNativeDigits(result) : result;
     }
 
     // Handle negative numbers
     if (inputNumber < 0) {
-      const positiveResult = numberToBanglaWords(Math.abs(inputNumber), options);
+      const positiveResult = numberToWords(Math.abs(inputNumber), options);
       return `ঋণাত্মক ${positiveResult}`;
     }
 
@@ -209,14 +209,14 @@ export const numberToBanglaWords = (num: number | string, options: ConverterOpti
       const integerPart = Math.floor(inputNumber);
       const decimalPart = inputNumber.toString().split('.')[1];
       
-      const integerWords = numberToBanglaWords(integerPart, options);
+      const integerWords = numberToWords(integerPart, options);
       const decimalWords = decimalPart
         .split('')
-        .map(digit => BANGLA_NUMBERS[parseInt(digit) as keyof typeof BANGLA_NUMBERS])
+        .map(digit => NUMBER_WORDS[parseInt(digit) as keyof typeof NUMBER_WORDS])
         .join(includeSpaces ? separator : '');
       
       const result = `${integerWords} দশমিক ${decimalWords}`;
-      return outputBanglaDigits ? convertToBanglaDigits(result) : result;
+      return outputNativeDigits ? convertToNativeDigits(result) : result;
     }
 
     // Convert to integer
@@ -227,19 +227,19 @@ export const numberToBanglaWords = (num: number | string, options: ConverterOpti
       const crorePart = Math.floor(integerNumber / 10000000);
       const remainder = integerNumber % 10000000;
       
-      const croreWords = numberToBanglaWords(crorePart, options);
-      const remainderWords = remainder > 0 ? numberToBanglaWords(remainder, options) : '';
+      const croreWords = numberToWords(crorePart, options);
+      const remainderWords = remainder > 0 ? numberToWords(remainder, options) : '';
       
       const result = remainderWords 
         ? `${croreWords} কোটি ${remainderWords}`
         : `${croreWords} কোটি`;
       
-      return outputBanglaDigits ? convertToBanglaDigits(result) : result;
+      return outputNativeDigits ? convertToNativeDigits(result) : result;
     }
 
     // Main conversion logic
     const result = convertNumberToWords(integerNumber, includeSpaces, separator);
-    return outputBanglaDigits ? convertToBanglaDigits(result) : result;
+    return outputNativeDigits ? convertToNativeDigits(result) : result;
 
   } catch (error) {
     throw new Error(`Conversion failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -250,7 +250,7 @@ export const numberToBanglaWords = (num: number | string, options: ConverterOpti
  * Core conversion logic for numbers
  */
 const convertNumberToWords = (num: number, includeSpaces: boolean, separator: string): string => {
-  if (num === 0) return BANGLA_NUMBERS[0];
+  if (num === 0) return NUMBER_WORDS[0];
   
   const words: string[] = [];
   const separatorStr = includeSpaces ? separator : '';
@@ -308,11 +308,11 @@ const convertNumberToWords = (num: number, includeSpaces: boolean, separator: st
 };
 
 /**
- * Converts numbers 1-99 to Bangla words
+ * Converts numbers 1-99 to number words
  */
 const convertHundreds = (num: number): string => {
   if (num === 0) return '';
-  if (num <= 99) return BANGLA_NUMBERS[num as keyof typeof BANGLA_NUMBERS] || '';
+  if (num <= 99) return NUMBER_WORDS[num as keyof typeof NUMBER_WORDS] || '';
   
   // For numbers 100-999, this function shouldn't be called directly
   // as it's handled in the main conversion logic
@@ -320,9 +320,9 @@ const convertHundreds = (num: number): string => {
 };
 
 /**
- * Utility function to validate if a string contains only Bangla digits
+ * Utility function to validate if a string contains only native digits (০-৯)
  */
-export const isBanglaDigitString = (str: string): boolean => {
+export const isNativeDigitString = (str: string): boolean => {
   return /^[০-৯\s]+$/.test(str);
 };
 

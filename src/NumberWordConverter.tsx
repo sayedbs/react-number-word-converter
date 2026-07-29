@@ -1,41 +1,41 @@
 import React, { useMemo } from 'react';
-import { numberToBanglaWords } from './numberToBanglaWords';
-import { BanglaNumberConverterProps } from './types';
+import { numberToWords } from './numberToWords';
+import { NumberWordConverterProps } from './types';
 
 /**
- * React component for displaying Bangla number conversion
+ * React component for displaying number-to-word conversion
  * 
  * @example
  * ```tsx
- * <BanglaNumberConverter 
+ * <NumberWordConverter 
  *   value={12345} 
  *   options={{ includeSpaces: true }}
- *   className="bangla-text"
+ *   className="number-word-text"
  * />
  * ```
  */
-export const BanglaNumberConverter: React.FC<BanglaNumberConverterProps> = ({
+export const NumberWordConverter: React.FC<NumberWordConverterProps> = ({
   value,
   options = {},
   className = '',
   style = {},
   onConvert,
 }) => {
-  const { banglaText, error } = useMemo(() => {
+  const { wordText, error } = useMemo(() => {
     try {
-      const result = numberToBanglaWords(value, options);
+      const result = numberToWords(value, options);
       onConvert?.(result);
-      return { banglaText: result, error: null };
+      return { wordText: result, error: null };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Conversion failed';
-      return { banglaText: '', error: errorMessage };
+      return { wordText: '', error: errorMessage };
     }
   }, [value, options, onConvert]);
 
   if (error) {
     return (
       <span 
-        className={`bangla-number-error ${className}`}
+        className={`number-word-error ${className}`}
         style={{ color: 'red', ...style }}
         role="alert"
         aria-live="polite"
@@ -47,39 +47,39 @@ export const BanglaNumberConverter: React.FC<BanglaNumberConverterProps> = ({
 
   return (
     <span 
-      className={`bangla-number-converter ${className}`}
+      className={`number-word-converter ${className}`}
       style={style}
       lang="bn"
       dir="ltr"
     >
-      {banglaText}
+      {wordText}
     </span>
   );
 };
 
 /**
- * Input component that converts numbers to Bangla words in real-time
+ * Input component that converts numbers to number words in real-time
  */
-export interface BanglaNumberInputProps {
+export interface NumberWordInputProps {
   /** Initial value */
   defaultValue?: number | string;
   /** Placeholder text */
   placeholder?: string;
   /** Configuration options */
-  options?: BanglaNumberConverterProps['options'];
+  options?: NumberWordConverterProps['options'];
   /** Custom CSS class name */
   className?: string;
   /** Custom inline styles */
   style?: React.CSSProperties;
   /** Callback when value changes */
-  onChange?: (value: string, banglaText: string) => void;
+  onChange?: (value: string, wordText: string) => void;
   /** Whether to show the converted text below the input */
   showConvertedText?: boolean;
   /** Whether the input is disabled */
   disabled?: boolean;
 }
 
-export const BanglaNumberInput: React.FC<BanglaNumberInputProps> = ({
+export const NumberWordInput: React.FC<NumberWordInputProps> = ({
   defaultValue = '',
   placeholder = 'Enter a number...',
   options = {},
@@ -90,7 +90,7 @@ export const BanglaNumberInput: React.FC<BanglaNumberInputProps> = ({
   disabled = false,
 }) => {
   const [inputValue, setInputValue] = React.useState<string>(String(defaultValue));
-  const [banglaText, setBanglaText] = React.useState<string>('');
+  const [wordText, setWordText] = React.useState<string>('');
   const [error, setError] = React.useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,33 +99,33 @@ export const BanglaNumberInput: React.FC<BanglaNumberInputProps> = ({
 
     try {
       if (newValue.trim() === '') {
-        setBanglaText('');
+        setWordText('');
         setError(null);
         onChange?.(newValue, '');
         return;
       }
 
-      const result = numberToBanglaWords(newValue, options);
-      setBanglaText(result);
+      const result = numberToWords(newValue, options);
+      setWordText(result);
       setError(null);
       onChange?.(newValue, result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Invalid input';
       setError(errorMessage);
-      setBanglaText('');
+      setWordText('');
       onChange?.(newValue, '');
     }
   };
 
   return (
-    <div className={`bangla-number-input-container ${className}`} style={style}>
+    <div className={`number-word-input-container ${className}`} style={style}>
       <input
         type="text"
         value={inputValue}
         onChange={handleInputChange}
         placeholder={placeholder}
         disabled={disabled}
-        className="bangla-number-input"
+        className="number-word-input"
         style={{
           width: '100%',
           padding: '8px 12px',
@@ -134,13 +134,13 @@ export const BanglaNumberInput: React.FC<BanglaNumberInputProps> = ({
           fontSize: '16px',
           fontFamily: 'inherit',
         }}
-        aria-describedby={showConvertedText ? 'bangla-conversion' : undefined}
+        aria-describedby={showConvertedText ? 'number-word-conversion' : undefined}
       />
       
       {showConvertedText && (
         <div
-          id="bangla-conversion"
-          className="bangla-conversion-result"
+          id="number-word-conversion"
+          className="number-word-conversion-result"
           style={{
             marginTop: '8px',
             padding: '8px',
@@ -157,7 +157,7 @@ export const BanglaNumberInput: React.FC<BanglaNumberInputProps> = ({
             </span>
           ) : (
             <span lang="bn" dir="ltr">
-              {banglaText || 'Enter a number to see Bangla conversion'}
+              {wordText || 'Enter a number to see number conversion'}
             </span>
           )}
         </div>

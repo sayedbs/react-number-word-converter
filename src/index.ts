@@ -1,26 +1,26 @@
 // Main exports
-export { numberToBanglaWords } from './numberToBanglaWords';
-export { BanglaNumberConverter, BanglaNumberInput } from './BanglaNumberConverter';
-export { useBanglaNumberConverter } from './useBanglaNumberConverter';
+export { numberToWords } from './numberToWords';
+export { NumberWordConverter, NumberWordInput } from './NumberWordConverter';
+export { useNumberWordConverter } from './useNumberWordConverter';
 
 // Type exports
 export type {
   ConverterOptions,
-  BanglaNumberConverterProps,
-  UseBanglaNumberConverterReturn,
+  NumberWordConverterProps,
+  UseNumberWordConverterReturn,
 } from './types';
 
 // Utility functions
-export { isBanglaDigitString, isEnglishDigitString } from './numberToBanglaWords';
+export { isNativeDigitString, isEnglishDigitString } from './numberToWords';
 
 // Default export
-import { numberToBanglaWords } from './numberToBanglaWords';
-import { BanglaNumberConverter, BanglaNumberInput } from './BanglaNumberConverter';
-import { useBanglaNumberConverter } from './useBanglaNumberConverter';
+import { numberToWords } from './numberToWords';
+import { NumberWordConverter, NumberWordInput } from './NumberWordConverter';
+import { useNumberWordConverter } from './useNumberWordConverter';
 
 export default {
-  numberToBanglaWords,
-  BanglaNumberConverter,
-  BanglaNumberInput,
-  useBanglaNumberConverter,
+  numberToWords,
+  NumberWordConverter,
+  NumberWordInput,
+  useNumberWordConverter,
 };

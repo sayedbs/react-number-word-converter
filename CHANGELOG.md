@@ -9,15 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release of `react-number-word-converter`
-- Core `numberToBanglaWords` function with comprehensive number support
-- `BanglaNumberConverter` React component for displaying converted text
-- `BanglaNumberInput` React component with real-time conversion
-- `useBanglaNumberConverter` custom React hook
+- Core `numberToWords` function with comprehensive number support
+- `NumberWordConverter` React component for displaying converted text
+- `NumberWordInput` React component with real-time conversion
+- `useNumberWordConverter` custom React hook
 - Full TypeScript support with type definitions
 - Support for numbers from 0 to billions (Indian numbering system)
-- Configuration options for spacing, separators, and Bangla digits
+- Configuration options for spacing, separators, and native digits (০-৯)
 - Support for negative numbers and decimals
-- Digit string utilities (`isBanglaDigitString`, `isEnglishDigitString`)
+- Digit string utilities (`isNativeDigitString`, `isEnglishDigitString`)
 - Comprehensive test suite
 - In-package demo application
 - Rollup builds (UMD, ESM, minified) and TypeScript declarations

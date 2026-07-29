@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { 
-  BanglaNumberConverter, 
-  BanglaNumberInput, 
-  useBanglaNumberConverter,
-  numberToBanglaWords,
+  NumberWordConverter, 
+  NumberWordInput, 
+  useNumberWordConverter,
+  numberToWords,
   ConverterOptions 
 } from 'react-number-word-converter';
 
@@ -11,12 +11,12 @@ const App: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('12345');
   const [options, setOptions] = useState<ConverterOptions>({
     includeSpaces: true,
-    supportBanglaDigits: false,
-    outputBanglaDigits: false,
+    supportNativeDigits: false,
+    outputNativeDigits: false,
     separator: ' '
   });
 
-  const { banglaText, isLoading, error } = useBanglaNumberConverter(inputValue, options);
+  const { wordText, isLoading, error } = useNumberWordConverter(inputValue, options);
 
   const exampleNumbers = [
     0, 1, 10, 25, 100, 123, 1000, 1234, 10000, 10005, 
@@ -35,8 +35,8 @@ const App: React.FC = () => {
       <header className="header">
         <h1>🔢 React Number Word Converter</h1>
         <p>
-          A powerful React plugin that converts numeric values into Bangla (Bengali) words. 
-          Perfect for financial applications, educational tools, and Bengali language interfaces.
+          A powerful React plugin that converts numeric values into number words. 
+          Perfect for financial applications, educational tools, and localized interfaces.
         </p>
       </header>
 
@@ -69,21 +69,21 @@ const App: React.FC = () => {
             <div className="option-item">
               <input
                 type="checkbox"
-                id="supportBanglaDigits"
-                checked={options.supportBanglaDigits}
-                onChange={(e) => handleOptionChange('supportBanglaDigits', e.target.checked)}
+                id="supportNativeDigits"
+                checked={options.supportNativeDigits}
+                onChange={(e) => handleOptionChange('supportNativeDigits', e.target.checked)}
               />
-              <label htmlFor="supportBanglaDigits">Support Bangla digits (০-৯)</label>
+              <label htmlFor="supportNativeDigits">Support native digits (০-৯)</label>
             </div>
 
             <div className="option-item">
               <input
                 type="checkbox"
-                id="outputBanglaDigits"
-                checked={options.outputBanglaDigits}
-                onChange={(e) => handleOptionChange('outputBanglaDigits', e.target.checked)}
+                id="outputNativeDigits"
+                checked={options.outputNativeDigits}
+                onChange={(e) => handleOptionChange('outputNativeDigits', e.target.checked)}
               />
-              <label htmlFor="outputBanglaDigits">Output Bangla digits</label>
+              <label htmlFor="outputNativeDigits">Output native digits (০-৯)</label>
             </div>
           </div>
 
@@ -98,13 +98,13 @@ const App: React.FC = () => {
             />
           </div>
 
-          <div className="bangla-result">
+          <div className="word-result">
             {isLoading ? (
               <span>Converting...</span>
             ) : error ? (
               <span className="error">Error: {error}</span>
             ) : (
-              <span>{banglaText || 'Enter a number to see conversion'}</span>
+              <span>{wordText || 'Enter a number to see conversion'}</span>
             )}
           </div>
         </div>
@@ -112,8 +112,8 @@ const App: React.FC = () => {
         {/* Real-time Input Component */}
         <div className="card">
           <h2>⚡ Real-time Input Component</h2>
-          <p>Type numbers and see instant Bangla conversion:</p>
-          <BanglaNumberInput
+          <p>Type numbers and see instant word conversion:</p>
+          <NumberWordInput
             defaultValue="12345"
             placeholder="Type any number here..."
             options={options}
@@ -127,12 +127,12 @@ const App: React.FC = () => {
           <div className="examples">
             <div className="example-item">
               <h3>Basic Converter</h3>
-              <BanglaNumberConverter value={12345} />
+              <NumberWordConverter value={12345} />
             </div>
             
             <div className="example-item">
               <h3>Without Spaces</h3>
-              <BanglaNumberConverter 
+              <NumberWordConverter 
                 value={12345} 
                 options={{ includeSpaces: false }} 
               />
@@ -140,7 +140,7 @@ const App: React.FC = () => {
             
             <div className="example-item">
               <h3>Custom Separator</h3>
-              <BanglaNumberConverter 
+              <NumberWordConverter 
                 value={12345} 
                 options={{ separator: '-' }} 
               />
@@ -148,17 +148,17 @@ const App: React.FC = () => {
             
             <div className="example-item">
               <h3>Decimal Number</h3>
-              <BanglaNumberConverter value={123.45} />
+              <NumberWordConverter value={123.45} />
             </div>
             
             <div className="example-item">
               <h3>Negative Number</h3>
-              <BanglaNumberConverter value={-12345} />
+              <NumberWordConverter value={-12345} />
             </div>
             
             <div className="example-item">
               <h3>Large Number</h3>
-              <BanglaNumberConverter value={123456789} />
+              <NumberWordConverter value={123456789} />
             </div>
           </div>
         </div>
@@ -166,13 +166,13 @@ const App: React.FC = () => {
         {/* Number Examples */}
         <div className="card">
           <h2>📚 Number Examples</h2>
-          <p>Common numbers and their Bangla word representations:</p>
+          <p>Common numbers and their word representations:</p>
           <div className="examples">
             {exampleNumbers.map((num) => (
               <div key={num} className="example-item">
                 <div className="example-number">{num.toLocaleString()}</div>
-                <div className="example-bangla">
-                  {numberToBanglaWords(num, options)}
+                <div className="example-words">
+                  {numberToWords(num, options)}
                 </div>
               </div>
             ))}
@@ -198,7 +198,7 @@ const App: React.FC = () => {
             <div className="feature">
               <div className="feature-icon">⚙️</div>
               <h4>Highly Configurable</h4>
-              <p>Customizable spacing, separators, and support for Bangla digits</p>
+              <p>Customizable spacing, separators, and support for native digits (০-৯)</p>
             </div>
             
             <div className="feature">
@@ -226,13 +226,13 @@ const App: React.FC = () => {
           <h2>💻 Usage Examples</h2>
           <div style={{ backgroundColor: '#f7fafc', padding: '20px', borderRadius: '8px', fontFamily: 'monospace' }}>
             <h3>Basic Usage:</h3>
-            <pre>{`import { BanglaNumberConverter } from 'react-number-word-converter';
+            <pre>{`import { NumberWordConverter } from 'react-number-word-converter';
 
-<BanglaNumberConverter value={12345} />
+<NumberWordConverter value={12345} />
 // Output: বারো হাজার তিন শত পঁয়তাল্লিশ`}</pre>
 
             <h3>With Custom Options:</h3>
-            <pre>{`<BanglaNumberConverter 
+            <pre>{`<NumberWordConverter 
   value={12345} 
   options={{ 
     includeSpaces: false,
@@ -242,15 +242,15 @@ const App: React.FC = () => {
 // Output: বারো-হাজার-তিন-শত-পঁয়তাল্লিশ`}</pre>
 
             <h3>Using the Hook:</h3>
-            <pre>{`import { useBanglaNumberConverter } from 'react-number-word-converter';
+            <pre>{`import { useNumberWordConverter } from 'react-number-word-converter';
 
-const { banglaText, convert } = useBanglaNumberConverter(12345);
-// banglaText: "বারো হাজার তিন শত পঁয়তাল্লিশ"`}</pre>
+const { wordText, convert } = useNumberWordConverter(12345);
+// wordText: "বারো হাজার তিন শত পঁয়তাল্লিশ"`}</pre>
 
             <h3>Direct Function Call:</h3>
-            <pre>{`import { numberToBanglaWords } from 'react-number-word-converter';
+            <pre>{`import { numberToWords } from 'react-number-word-converter';
 
-const result = numberToBanglaWords(12345);
+const result = numberToWords(12345);
 // result: "বারো হাজার তিন শত পঁয়তাল্লিশ"`}</pre>
           </div>
         </div>

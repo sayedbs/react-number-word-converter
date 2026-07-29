@@ -1,85 +1,85 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { BanglaNumberConverter, BanglaNumberInput } from '../BanglaNumberConverter';
+import { NumberWordConverter, NumberWordInput } from '../NumberWordConverter';
 
-describe('BanglaNumberConverter', () => {
+describe('NumberWordConverter', () => {
   test('should render converted number correctly', () => {
-    render(<BanglaNumberConverter value={123} />);
+    render(<NumberWordConverter value={123} />);
     expect(screen.getByText('এক শত তেইশ')).toBeInTheDocument();
   });
 
   test('should handle zero', () => {
-    render(<BanglaNumberConverter value={0} />);
+    render(<NumberWordConverter value={0} />);
     expect(screen.getByText('শূন্য')).toBeInTheDocument();
   });
 
   test('should handle negative numbers', () => {
-    render(<BanglaNumberConverter value={-123} />);
+    render(<NumberWordConverter value={-123} />);
     expect(screen.getByText('ঋণাত্মক এক শত তেইশ')).toBeInTheDocument();
   });
 
   test('should handle decimal numbers', () => {
-    render(<BanglaNumberConverter value={10.5} />);
+    render(<NumberWordConverter value={10.5} />);
     expect(screen.getByText('দশ দশমিক পাঁচ')).toBeInTheDocument();
   });
 
   test('should handle string input', () => {
-    render(<BanglaNumberConverter value="123" />);
+    render(<NumberWordConverter value="123" />);
     expect(screen.getByText('এক শত তেইশ')).toBeInTheDocument();
   });
 
   test('should apply custom className', () => {
-    render(<BanglaNumberConverter value={123} className="custom-class" />);
+    render(<NumberWordConverter value={123} className="custom-class" />);
     const element = screen.getByText('এক শত তেইশ');
     expect(element).toHaveClass('custom-class');
   });
 
   test('should apply custom styles', () => {
     const customStyle = { color: 'red', fontSize: '20px' };
-    render(<BanglaNumberConverter value={123} style={customStyle} />);
+    render(<NumberWordConverter value={123} style={customStyle} />);
     const element = screen.getByText('এক শত তেইশ');
     expect(element).toHaveStyle('color: red; font-size: 20px');
   });
 
   test('should call onConvert callback', () => {
     const onConvert = jest.fn();
-    render(<BanglaNumberConverter value={123} onConvert={onConvert} />);
+    render(<NumberWordConverter value={123} onConvert={onConvert} />);
     expect(onConvert).toHaveBeenCalledWith('এক শত তেইশ');
   });
 
   test('should handle conversion options', () => {
     const options = { includeSpaces: false };
-    render(<BanglaNumberConverter value={123} options={options} />);
+    render(<NumberWordConverter value={123} options={options} />);
     expect(screen.getByText('এক শততেইশ')).toBeInTheDocument();
   });
 
   test('should display error for invalid input', () => {
-    render(<BanglaNumberConverter value="invalid" />);
+    render(<NumberWordConverter value="invalid" />);
     expect(screen.getByText(/Error:/)).toBeInTheDocument();
   });
 
   test('should have proper accessibility attributes', () => {
-    render(<BanglaNumberConverter value={123} />);
+    render(<NumberWordConverter value={123} />);
     const element = screen.getByText('এক শত তেইশ');
     expect(element).toHaveAttribute('lang', 'bn');
     expect(element).toHaveAttribute('dir', 'ltr');
   });
 });
 
-describe('BanglaNumberInput', () => {
+describe('NumberWordInput', () => {
   test('should render input field', () => {
-    render(<BanglaNumberInput />);
+    render(<NumberWordInput />);
     expect(screen.getByRole('textbox')).toBeInTheDocument();
   });
 
   test('should show placeholder text', () => {
-    render(<BanglaNumberInput placeholder="Enter number" />);
+    render(<NumberWordInput placeholder="Enter number" />);
     expect(screen.getByPlaceholderText('Enter number')).toBeInTheDocument();
   });
 
   test('should convert input in real-time', async () => {
-    render(<BanglaNumberInput />);
+    render(<NumberWordInput />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: '123' } });
@@ -90,7 +90,7 @@ describe('BanglaNumberInput', () => {
   });
 
   test('should show error for invalid input', async () => {
-    render(<BanglaNumberInput />);
+    render(<NumberWordInput />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: 'abc' } });
@@ -101,19 +101,19 @@ describe('BanglaNumberInput', () => {
   });
 
   test('should handle empty input', async () => {
-    render(<BanglaNumberInput />);
+    render(<NumberWordInput />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: '' } });
     
     await waitFor(() => {
-      expect(screen.getByText('Enter a number to see Bangla conversion')).toBeInTheDocument();
+      expect(screen.getByText('Enter a number to see number conversion')).toBeInTheDocument();
     });
   });
 
   test('should call onChange callback', async () => {
     const onChange = jest.fn();
-    render(<BanglaNumberInput onChange={onChange} />);
+    render(<NumberWordInput onChange={onChange} />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: '123' } });
@@ -124,20 +124,20 @@ describe('BanglaNumberInput', () => {
   });
 
   test('should handle disabled state', () => {
-    render(<BanglaNumberInput disabled={true} />);
+    render(<NumberWordInput disabled={true} />);
     const input = screen.getByRole('textbox');
     expect(input).toBeDisabled();
   });
 
   test('should hide converted text when showConvertedText is false', () => {
-    render(<BanglaNumberInput showConvertedText={false} />);
-    expect(screen.queryByText('Enter a number to see Bangla conversion')).not.toBeInTheDocument();
+    render(<NumberWordInput showConvertedText={false} />);
+    expect(screen.queryByText('Enter a number to see number conversion')).not.toBeInTheDocument();
   });
 
   test('should apply custom className and styles', () => {
     const customStyle = { backgroundColor: 'red' };
     render(
-      <BanglaNumberInput 
+      <NumberWordInput 
         className="custom-input" 
         style={customStyle} 
       />
@@ -148,14 +148,14 @@ describe('BanglaNumberInput', () => {
   });
 
   test('should handle defaultValue', () => {
-    render(<BanglaNumberInput defaultValue={123} />);
+    render(<NumberWordInput defaultValue={123} />);
     const input = screen.getByRole('textbox');
     expect(input).toHaveValue('123');
   });
 
   test('should handle conversion options', async () => {
     const options = { includeSpaces: false };
-    render(<BanglaNumberInput options={options} />);
+    render(<NumberWordInput options={options} />);
     const input = screen.getByRole('textbox');
     
     fireEvent.change(input, { target: { value: '123' } });

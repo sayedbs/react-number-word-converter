@@ -1,7 +1,7 @@
 {
   "name": "react-number-word-converter",
   "version": "1.0.0",
-  "description": "A React utility plugin that converts numeric values into Bangla (Bengali) words",
+  "description": "A React utility plugin that converts numeric values into number words",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -14,12 +14,13 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "demo": "cd demo && npm start",
+    "demo": "npm run build && npm pack && cd demo && npm install ../react-number-word-converter-$npm_package_version.tgz && npm start",
+    "demo:install": "npm run build && npm pack && cd demo && npm install ../react-number-word-converter-$npm_package_version.tgz",
     "prepublishOnly": "npx tsc"
   },
   "keywords": [
     "react",
-    "bangla",
+    "number-word",
     "bengali",
     "number",
     "converter",

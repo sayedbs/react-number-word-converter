@@ -1,21 +1,21 @@
 /**
- * Configuration options for the Bangla number converter
+ * Configuration options for the number-word converter
  */
 export interface ConverterOptions {
   /** Whether to include spaces between words (default: true) */
   includeSpaces?: boolean;
-  /** Whether to support Bangla digits (০-৯) in input (default: false) */
-  supportBanglaDigits?: boolean;
-  /** Whether to output Bangla digits instead of words (default: false) */
-  outputBanglaDigits?: boolean;
+  /** Whether to support native digits (০-৯) in input (default: false) */
+  supportNativeDigits?: boolean;
+  /** Whether to output native digits (০-৯) instead of words (default: false) */
+  outputNativeDigits?: boolean;
   /** Custom separator between words (default: ' ') */
   separator?: string;
 }
 
 /**
- * Props for the BanglaNumberConverter React component
+ * Props for the NumberWordConverter React component
  */
-export interface BanglaNumberConverterProps {
+export interface NumberWordConverterProps {
   /** The number to convert */
   value: number | string;
   /** Configuration options */
@@ -29,11 +29,11 @@ export interface BanglaNumberConverterProps {
 }
 
 /**
- * Hook return type for useBanglaNumberConverter
+ * Hook return type for useNumberWordConverter
  */
-export interface UseBanglaNumberConverterReturn {
-  /** The converted Bangla text */
-  banglaText: string;
+export interface UseNumberWordConverterReturn {
+  /** The converted word text */
+  wordText: string;
   /** Whether the conversion is in progress */
   isLoading: boolean;
   /** Any error that occurred during conversion */

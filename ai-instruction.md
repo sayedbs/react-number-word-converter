@@ -2,7 +2,7 @@
 #🧩 Project Name
 **React Number Word Converter**
 
-A React utility plugin that converts numeric values into Bangla (Bengali) words, e.g.:
+A React utility plugin that converts numeric values into number words, e.g.:
 
 10005 → "দশ হাজার পাঁচ"
 
@@ -12,22 +12,22 @@ A React utility plugin that converts numeric values into Bangla (Bengali) words,
 
 ## 🎯 Purpose
 This AI agent assists with:
-- Improving, debugging, and optimizing number-to-Bangla word conversion logic.
-- Extending functionality (e.g., Bangla numerals, fractions, formatting).
+- Improving, debugging, and optimizing number-to-word word conversion logic.
+- Extending functionality (e.g., native numerals, fractions, formatting).
 - Maintaining React component code.
 - Preparing and publishing this library to **npm**.
 
 ---
 
 ## ⚙️ Core Functions
-1. **Convert Numbers → Bangla Words**
+1. **Convert Numbers → Words**
    - Follow Indian numeric grouping: thousand, lakh, crore.
    - Example:  
      - `100 → "এক শত"`  
      - `12000 → "বারো হাজার"`  
      - `10005 → "দশ হাজার পাঁচ"`
 2. **Optional Extensions**
-   - Support Bangla digits (`০১২৩৪৫৬৭৮৯`)
+   - Support native digits (০-৯) (`০১২৩৪৫৬৭৮৯`)
    - Decimal support (e.g. `10.5 → "দশ দশমিক পাঁচ"`)
    - TypeScript definitions
    - Unit tests (Jest)
@@ -64,16 +64,16 @@ When acting as the AI for this project:
 ## 🧰 Example Commands
 
 ### 💬 Command 1 — Extend Logic
-> “Add support for Bangla digits (০-৯) in both input and output.”
+> “Add support for native digits (০-৯) (০-৯) in both input and output.”
 
 ### 💬 Command 2 — Create Demo
-> “Generate a small React demo app that shows input box + Bangla word output in real time.”
+> “Generate a small React demo app that shows input box + word output in real time.”
 
 ### 💬 Command 3 — Optimize
 > “Refactor the converter function for performance and readability.”
 
 ### 💬 Command 4 — Test
-> “Generate Jest test cases for `numberToBanglaWords()` including edge cases.”
+> “Generate Jest test cases for `numberToWords()` including edge cases.”
 
 ### 💬 Command 5 — Publish Setup
 > “Create npm-ready folder with `package.json`, README.md, and build configuration using Rollup.”
@@ -81,13 +81,13 @@ When acting as the AI for this project:
 ---
 
 ## 📁 Suggested File Structure
-react-bangla-number/
+react-number-word-number/
 ├── src/
-│ ├── numberToBanglaWords.js
-│ ├── BanglaNumber.jsx
+│ ├── numberToWords.js
+│ ├── NumberWordConverter.tsx
 │ └── index.js
 ├── tests/
-│ └── numberToBanglaWords.test.js
+│ └── numberToWords.test.js
 ├── package.json
 ├── README.md
 └── AI_INSTRUCTIONS.md ← (this file)

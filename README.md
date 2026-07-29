@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Sayed021/react-number-word-converter/badge.svg?branch=main)](https://coveralls.io/github/Sayed021/react-number-word-converter?branch=main)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A powerful React utility plugin that converts numeric values into Bangla (Bengali) words. Perfect for financial applications, educational tools, and Bengali language interfaces.
+A powerful React utility plugin that converts numeric values into number words. Perfect for financial applications, educational tools, and localized interfaces.
 
 ## ✨ Features
 
@@ -37,12 +37,12 @@ pnpm add react-number-word-converter
 ### Basic Usage
 
 ```tsx
-import { BanglaNumberConverter } from 'react-number-word-converter';
+import { NumberWordConverter } from 'react-number-word-converter';
 
 function App() {
   return (
     <div>
-      <BanglaNumberConverter value={12345} />
+      <NumberWordConverter value={12345} />
       {/* Output: বারো হাজার তিন শত পঁয়তাল্লিশ */}
     </div>
   );
@@ -52,16 +52,16 @@ function App() {
 ### Using the Hook
 
 ```tsx
-import { useBanglaNumberConverter } from 'react-number-word-converter';
+import { useNumberWordConverter } from 'react-number-word-converter';
 
 function MyComponent() {
-  const { banglaText, convert } = useBanglaNumberConverter(12345);
+  const { wordText, convert } = useNumberWordConverter(12345);
   
   return (
     <div>
       <p>Number: 12345</p>
-      <p>Bangla: {banglaText}</p>
-      {/* banglaText: "বারো হাজার তিন শত পঁয়তাল্লিশ" */}
+      <p>Words: {wordText}</p>
+      {/* wordText: "বারো হাজার তিন শত পঁয়তাল্লিশ" */}
     </div>
   );
 }
@@ -70,40 +70,40 @@ function MyComponent() {
 ### Direct Function Call
 
 ```tsx
-import { numberToBanglaWords } from 'react-number-word-converter';
+import { numberToWords } from 'react-number-word-converter';
 
-const result = numberToBanglaWords(12345);
+const result = numberToWords(12345);
 console.log(result); // "বারো হাজার তিন শত পঁয়তাল্লিশ"
 ```
 
 ## 📚 API Reference
 
-### `numberToBanglaWords(value, options?)`
+### `numberToWords(value, options?)`
 
-Converts a number to its Bangla word representation.
+Converts a number to its word representation.
 
 **Parameters:**
 - `value` (number | string): The number to convert
 - `options` (ConverterOptions, optional): Configuration options
 
-**Returns:** string - The Bangla word representation
+**Returns:** string - The word representation
 
 **Example:**
 ```tsx
-numberToBanglaWords(12345);
+numberToWords(12345);
 // Returns: "বারো হাজার তিন শত পঁয়তাল্লিশ"
 
-numberToBanglaWords(12345, { includeSpaces: false });
+numberToWords(12345, { includeSpaces: false });
 // Returns: "বারোহাজারতিনশতপঁয়তাল্লিশ"
 ```
 
-### `BanglaNumberConverter`
+### `NumberWordConverter`
 
-A React component that displays converted Bangla text.
+A React component that displays converted word text.
 
 **Props:**
 ```tsx
-interface BanglaNumberConverterProps {
+interface NumberWordConverterProps {
   value: number | string;           // The number to convert
   options?: ConverterOptions;       // Configuration options
   className?: string;               // Custom CSS class
@@ -114,27 +114,27 @@ interface BanglaNumberConverterProps {
 
 **Example:**
 ```tsx
-<BanglaNumberConverter 
+<NumberWordConverter 
   value={12345}
   options={{ includeSpaces: true }}
-  className="my-bangla-text"
+  className="my-number-word-text"
   onConvert={(result) => console.log(result)}
 />
 ```
 
-### `BanglaNumberInput`
+### `NumberWordInput`
 
-A React component with an input field that shows real-time Bangla conversion.
+A React component with an input field that shows real-time word conversion.
 
 **Props:**
 ```tsx
-interface BanglaNumberInputProps {
+interface NumberWordInputProps {
   defaultValue?: number | string;   // Initial value
   placeholder?: string;             // Placeholder text
   options?: ConverterOptions;       // Configuration options
   className?: string;               // Custom CSS class
   style?: React.CSSProperties;      // Custom inline styles
-  onChange?: (value: string, banglaText: string) => void; // Change callback
+  onChange?: (value: string, wordText: string) => void; // Change callback
   showConvertedText?: boolean;      // Whether to show converted text
   disabled?: boolean;               // Whether input is disabled
 }
@@ -142,18 +142,18 @@ interface BanglaNumberInputProps {
 
 **Example:**
 ```tsx
-<BanglaNumberInput
+<NumberWordInput
   defaultValue={12345}
   placeholder="Enter a number..."
   showConvertedText={true}
-  onChange={(value, banglaText) => {
+  onChange={(value, wordText) => {
     console.log('Input:', value);
-    console.log('Bangla:', banglaText);
+    console.log('Words:', wordText);
   }}
 />
 ```
 
-### `useBanglaNumberConverter`
+### `useNumberWordConverter`
 
 A custom React hook for number conversion.
 
@@ -163,8 +163,8 @@ A custom React hook for number conversion.
 
 **Returns:**
 ```tsx
-interface UseBanglaNumberConverterReturn {
-  banglaText: string;               // The converted Bangla text
+interface UseNumberWordConverterReturn {
+  wordText: string;               // The converted word text
   isLoading: boolean;               // Whether conversion is in progress
   error: string | null;             // Any error that occurred
   convert: (value: number | string) => void; // Function to trigger conversion
@@ -173,7 +173,7 @@ interface UseBanglaNumberConverterReturn {
 
 **Example:**
 ```tsx
-const { banglaText, isLoading, error, convert } = useBanglaNumberConverter(12345);
+const { wordText, isLoading, error, convert } = useNumberWordConverter(12345);
 
 // Convert a new number
 convert(67890);
@@ -186,8 +186,8 @@ convert(67890);
 ```tsx
 interface ConverterOptions {
   includeSpaces?: boolean;          // Include spaces between words (default: true)
-  supportBanglaDigits?: boolean;    // Support Bangla digits (০-৯) in input (default: false)
-  outputBanglaDigits?: boolean;     // Output Bangla digits instead of words (default: false)
+  supportNativeDigits?: boolean;    // Support native digits (০-৯) (০-৯) in input (default: false)
+  outputNativeDigits?: boolean;     // Output native digits (০-৯) instead of words (default: false)
   separator?: string;               // Custom separator between words (default: ' ')
 }
 ```
@@ -196,21 +196,21 @@ interface ConverterOptions {
 
 ```tsx
 // Without spaces
-numberToBanglaWords(12345, { includeSpaces: false });
+numberToWords(12345, { includeSpaces: false });
 // Returns: "বারোহাজারতিনশতপঁয়তাল্লিশ"
 
 // Custom separator
-numberToBanglaWords(12345, { separator: '-' });
+numberToWords(12345, { separator: '-' });
 // Returns: "বারো-হাজার-তিন-শত-পঁয়তাল্লিশ"
 
-// Support Bangla digits in input
-numberToBanglaWords('১২৩৪৫', { supportBanglaDigits: true });
+// Support native digits (০-৯) in input
+numberToWords('১২৩৪৫', { supportNativeDigits: true });
 // Returns: "বারো হাজার তিন শত পঁয়তাল্লিশ"
 ```
 
 ## 📖 Number Examples
 
-| Number | Bangla Words |
+| Number | Words |
 |--------|-------------|
 | 0 | শূন্য |
 | 1 | এক |
@@ -230,14 +230,14 @@ numberToBanglaWords('১২৩৪৫', { supportBanglaDigits: true });
 ### Financial Application
 
 ```tsx
-import { BanglaNumberConverter } from 'react-number-word-converter';
+import { NumberWordConverter } from 'react-number-word-converter';
 
 function InvoiceAmount({ amount }: { amount: number }) {
   return (
     <div className="invoice-amount">
       <h3>Amount: ₹{amount.toLocaleString()}</h3>
-      <p className="bangla-amount">
-        <BanglaNumberConverter value={amount} />
+      <p className="number-word-amount">
+        <NumberWordConverter value={amount} />
       </p>
     </div>
   );
@@ -252,14 +252,14 @@ function InvoiceAmount({ amount }: { amount: number }) {
 ### Educational Tool
 
 ```tsx
-import { BanglaNumberInput } from 'react-number-word-converter';
+import { NumberWordInput } from 'react-number-word-converter';
 
 function NumberLearningApp() {
   return (
     <div className="learning-app">
-      <h2>Learn Numbers in Bangla</h2>
-      <BanglaNumberInput
-        placeholder="Type any number to learn its Bangla name..."
+      <h2>Learn Number Words</h2>
+      <NumberWordInput
+        placeholder="Type any number to learn its word form..."
         showConvertedText={true}
         options={{ includeSpaces: true }}
       />
@@ -271,13 +271,13 @@ function NumberLearningApp() {
 ### Custom Styling
 
 ```tsx
-import { BanglaNumberConverter } from 'react-number-word-converter';
+import { NumberWordConverter } from 'react-number-word-converter';
 
 function StyledConverter({ value }: { value: number }) {
   return (
-    <BanglaNumberConverter
+    <NumberWordConverter
       value={value}
-      className="custom-bangla-text"
+      className="custom-number-word-text"
       style={{
         fontSize: '24px',
         color: '#2d3748',
@@ -298,22 +298,22 @@ function StyledConverter({ value }: { value: number }) {
 
 ```tsx
 import { useState } from 'react';
-import { BanglaNumberInput } from 'react-number-word-converter';
+import { NumberWordInput } from 'react-number-word-converter';
 
 function PaymentForm() {
   const [amount, setAmount] = useState('');
-  const [banglaAmount, setBanglaAmount] = useState('');
+  const [wordAmount, setWordAmount] = useState('');
 
-  const handleAmountChange = (value: string, banglaText: string) => {
+  const handleAmountChange = (value: string, wordText: string) => {
     setAmount(value);
-    setBanglaAmount(banglaText);
+    setWordAmount(wordText);
   };
 
   return (
     <form>
       <div className="form-group">
         <label htmlFor="amount">Payment Amount</label>
-        <BanglaNumberInput
+        <NumberWordInput
           id="amount"
           defaultValue={amount}
           placeholder="Enter amount..."
@@ -322,9 +322,9 @@ function PaymentForm() {
         />
       </div>
       
-      {banglaAmount && (
-        <div className="bangla-display">
-          <strong>Amount in Bangla:</strong> {banglaAmount}
+      {wordAmount && (
+        <div className="number-word-display">
+          <strong>Amount in Words:</strong> {wordAmount}
         </div>
       )}
     </form>
@@ -335,7 +335,7 @@ function PaymentForm() {
 ### Multiple Language Support
 
 ```tsx
-import { BanglaNumberConverter } from 'react-number-word-converter';
+import { NumberWordConverter } from 'react-number-word-converter';
 
 function MultiLanguageInvoice({ amount, language }: { amount: number; language: string }) {
   return (
@@ -344,8 +344,8 @@ function MultiLanguageInvoice({ amount, language }: { amount: number; language: 
       <p className="amount-numeric">₹{amount.toLocaleString()}</p>
       
       {language === 'bn' && (
-        <p className="amount-bangla">
-          <BanglaNumberConverter value={amount} />
+        <p className="amount-number-word">
+          <NumberWordConverter value={amount} />
         </p>
       )}
     </div>
@@ -399,14 +399,14 @@ This creates:
 The components come with minimal default styling. You can customize the appearance using CSS:
 
 ```css
-.bangla-number-converter {
+.number-word-number-converter {
   font-family: 'Noto Sans Bengali', 'Arial Unicode MS', sans-serif;
   font-size: 18px;
   color: #2d3748;
   line-height: 1.6;
 }
 
-.bangla-number-input {
+.number-word-number-input {
   width: 100%;
   padding: 12px;
   border: 2px solid #e2e8f0;
@@ -414,7 +414,7 @@ The components come with minimal default styling. You can customize the appearan
   font-size: 16px;
 }
 
-.bangla-conversion-result {
+.number-word-conversion-result {
   margin-top: 8px;
   padding: 12px;
   background-color: #f7fafc;

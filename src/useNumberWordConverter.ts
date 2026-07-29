@@ -1,35 +1,35 @@
 import { useState, useCallback, useEffect } from 'react';
-import { numberToBanglaWords } from './numberToBanglaWords';
-import { ConverterOptions, UseBanglaNumberConverterReturn } from './types';
+import { numberToWords } from './numberToWords';
+import { ConverterOptions, UseNumberWordConverterReturn } from './types';
 
 const DEFAULT_OPTIONS: ConverterOptions = {};
 
 /**
- * Custom hook for converting numbers to Bangla words
+ * Custom hook for converting numbers to number words
  * @param initialValue - Initial number to convert
  * @param options - Configuration options
  * @returns Object with conversion result and utilities
  */
-export const useBanglaNumberConverter = (
+export const useNumberWordConverter = (
   initialValue: number | string = 0,
   options: ConverterOptions = DEFAULT_OPTIONS
-): UseBanglaNumberConverterReturn => {
-  const [banglaText, setBanglaText] = useState<string>('');
+): UseNumberWordConverterReturn => {
+  const [wordText, setWordText] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Convert a number to Bangla words
+   * Convert a number to number words
    */
   const convert = useCallback((value: number | string) => {
     setError(null);
 
     try {
-      const result = numberToBanglaWords(value, options);
-      setBanglaText(result);
+      const result = numberToWords(value, options);
+      setWordText(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Conversion failed');
-      setBanglaText('');
+      setWordText('');
     }
   }, [options]);
 
@@ -39,7 +39,7 @@ export const useBanglaNumberConverter = (
   }, [convert, initialValue]);
 
   return {
-    banglaText,
+    wordText,
     isLoading,
     error,
     convert,
