@@ -4,14 +4,15 @@
 
 [![npm version](https://img.shields.io/npm/v/react-number-word-converter.svg)](https://www.npmjs.com/package/react-number-word-converter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub](https://img.shields.io/badge/GitHub-Sayedbs%2Freact--number--word--converter-blue?logo=github)](https://github.com/Sayedbs/react-number-word-converter)
-[![Author](https://img.shields.io/badge/author-sayed021-informational)](https://github.com/Sayedbs)
+[![GitHub](https://img.shields.io/badge/GitHub-sayedbs%2Freact--number--word--converter-blue?logo=github)](https://github.com/sayedbs/react-number-word-converter)
+[![Author](https://img.shields.io/badge/author-sayed021-informational)](https://github.com/sayedbs)
 
 **React number to words** converter by **sayed021** — turn any number into English, Bangla (Bengali), Arabic, or your own language with one React plugin. Built for i18n, finance UIs, education tools, and multilingual apps. Supports RTL, TypeScript, hooks, and custom locales via `registerLocale()`.
 
 - **npm:** [`react-number-word-converter`](https://www.npmjs.com/package/react-number-word-converter)
-- **GitHub:** [github.com/Sayedbs/react-number-word-converter](https://github.com/Sayedbs/react-number-word-converter)
-- **Author:** [sayed021](https://github.com/Sayedbs)
+- **GitHub:** [github.com/sayedbs/react-number-word-converter](https://github.com/sayedbs/react-number-word-converter)
+- **Release:** [v1.0.0](https://github.com/sayedbs/react-number-word-converter/releases/tag/1.0.0)
+- **Author:** [sayed021](https://github.com/sayedbs)
 
 ```tsx
 <NumberWordConverter value={12345} />            // twelve thousand three hundred forty-five
@@ -987,7 +988,7 @@ If you encounter any issues:
 
 1. Check the [documentation](#-api-reference)
 2. Look at the [examples](#-advanced-examples)
-3. Open an [issue](https://github.com/Sayedbs/react-number-word-converter/issues)
+3. Open an [issue](https://github.com/sayedbs/react-number-word-converter/issues)
 4. Contact the maintainer
 
 ## 🤝 Contributing
@@ -1004,7 +1005,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ```bash
 # Clone the repository
-git clone https://github.com/Sayedbs/react-number-word-converter.git
+git clone https://github.com/sayedbs/react-number-word-converter.git
 
 # Install dependencies
 npm install
@@ -1023,7 +1024,7 @@ npm run build
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-**MIT © 2026 [sayed021](https://github.com/Sayedbs)**
+**MIT © 2026 [sayed021](https://github.com/sayedbs)**
 
 ## 🙏 Acknowledgments
 
@@ -1038,7 +1039,7 @@ If you have any questions or need help, please:
 
 1. Check the [documentation](#-api-reference)
 2. Look at the [examples](#-advanced-examples)
-3. Open an [issue](https://github.com/Sayedbs/react-number-word-converter/issues)
+3. Open an [issue](https://github.com/sayedbs/react-number-word-converter/issues)
 4. Contact the maintainer
 
 ## 📈 Roadmap
@@ -1057,11 +1058,12 @@ Suggested GitHub repository topics for discovery:
 
 `react` · `typescript` · `i18n` · `number-to-words` · `localization` · `bangla` · `bengali` · `arabic` · `rtl` · `react-hooks` · `sayed021`
 
-- Repository: https://github.com/Sayedbs/react-number-word-converter
+- Repository: https://github.com/sayedbs/react-number-word-converter
+- Release v1.0.0: https://github.com/sayedbs/react-number-word-converter/releases/tag/1.0.0
 - npm: https://www.npmjs.com/package/react-number-word-converter
-- Issues: https://github.com/Sayedbs/react-number-word-converter/issues
-- Author: [sayed021](https://github.com/Sayedbs)
+- Issues: https://github.com/sayedbs/react-number-word-converter/issues
+- Author: [sayed021](https://github.com/sayedbs)
 
 ---
 
-Made with ❤️ by [sayed021](https://github.com/Sayedbs) · [GitHub repo](https://github.com/Sayedbs/react-number-word-converter)
+Made with ❤️ by [sayed021](https://github.com/sayedbs) · [GitHub repo](https://github.com/sayedbs/react-number-word-converter)

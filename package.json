@@ -16,7 +16,7 @@
     "test:coverage": "jest --coverage",
     "demo": "npm run build && npm pack && cd demo && npm install ../react-number-word-converter-$npm_package_version.tgz && npm start",
     "demo:install": "npm run build && npm pack && cd demo && npm install ../react-number-word-converter-$npm_package_version.tgz",
-    "prepublishOnly": "npx tsc"
+    "prepublishOnly": "rm -rf dist && npm run build"
   },
   "keywords": [
     "react",
@@ -45,13 +45,13 @@
     "typescript",
     "hook",
     "sayed021",
-    "Sayedbs",
+    "sayedbs",
     "react-number-word-converter",
     "one-plugin-all-language"
   ],
   "author": {
     "name": "sayed021",
-    "url": "https://github.com/Sayedbs"
+    "url": "https://github.com/sayedbs"
   },
   "license": "MIT",
   "peerDependencies": {
@@ -87,10 +87,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sayedbs/react-number-word-converter.git"
+    "url": "git+https://github.com/sayedbs/react-number-word-converter.git"
   },
   "bugs": {
-    "url": "https://github.com/Sayedbs/react-number-word-converter/issues"
+    "url": "https://github.com/sayedbs/react-number-word-converter/issues"
   },
-  "homepage": "https://github.com/Sayedbs/react-number-word-converter#readme"
+  "homepage": "https://github.com/sayedbs/react-number-word-converter#readme"
 }
